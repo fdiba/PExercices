@@ -8,7 +8,7 @@ class ParticleSystem{
   ParticleSystem(){
     
     particles = new ArrayList<Particle>();
-    for (int i=0; i<1000; i++){
+    for (int i=0; i<100; i++){
       particles.add(new Particle());
     }  
   
@@ -26,6 +26,10 @@ class ParticleSystem{
          }*/
     }
     
+  }
+  void run(){
+    update();
+    display(); 
   }
   void display(){
     it = particles.iterator();

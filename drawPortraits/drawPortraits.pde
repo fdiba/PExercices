@@ -6,6 +6,7 @@ ParticleSystem ps;
 
 void setup(){
   size(640,480);
+  //smooth();
   menu = new Menu();
   ps = new ParticleSystem();
   
@@ -21,7 +22,7 @@ void setup(){
 }
 
 void draw(){
-  background(0);
+  //background(0);
   
   
   if(!saturation) {
@@ -30,7 +31,7 @@ void draw(){
       withdrawColors();
     updatePixels();
   } else {
-    ps.display();
+    ps.run();
   }
 }
 
@@ -73,5 +74,8 @@ void keyPressed(){
   }
 }
 void mousePressed(){
- saturation = true; 
+  if(!saturation){
+    background(0);
+    saturation = true;
+  }
 }
