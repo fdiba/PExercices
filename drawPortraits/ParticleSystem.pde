@@ -20,25 +20,11 @@ class ParticleSystem{
     
          Particle p = it.next();
          p.update();
-         
+         p.display();
          /*if (p.isDead()) {
              it.remove();
          }*/
     }
     
-  }
-  void run(){
-    update();
-    display(); 
-  }
-  void display(){
-    it = particles.iterator();
-
-    while (it.hasNext()) {
-    
-         Particle p = it.next();
-         p.display();
-         
-    }
   }
 }
