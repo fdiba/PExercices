@@ -6,19 +6,14 @@ class Particle {
   PVector translation;
   PVector jump;
   boolean init;
-  float tj;
 
   Particle() {
 
     translation = new PVector(random(10000), random(10000));
     location = plocation = new PVector();
 
-    tj = 2000;
-
     jump = new PVector(random(0.001, 0.01), random(0.001, 0.01));
-    //location = new PVector(random(640), random(480));
-    
-    
+     
     couleur = color(255,0,0);
   }
   void update() {
