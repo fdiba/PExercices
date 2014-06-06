@@ -7,8 +7,8 @@ ParticleSystem ps;
 
 void setup(){
   size(640,480);
-  frameRate(60);
-  //smooth();
+  frameRate(25);
+  smooth();
   background(0);
   menu = new Menu();
   ps = new ParticleSystem();
@@ -21,6 +21,7 @@ void setup(){
 }
 
 void draw(){
+  
   //image(host.img, host.location.x, host.location.y);
   if(!saturation) {
     image(host.img, host.location.x, host.location.y);
@@ -28,10 +29,7 @@ void draw(){
       host.withdrawColors();
     updatePixels();
   } else {
-    loadPixels();
-    //host.img.loadPixels();
     ps.update();
-    //updatePixels();
   }
 }
 void keyPressed(){
@@ -41,18 +39,23 @@ void keyPressed(){
     } else if (keyCode == DOWN && !saturation) {
       menu.reduceSaturation();
     }
-    //println(menu.brightness);
   }
 }
+void mouseMoved(){
+  host.contrast = 5f*(mouseX/(float)width); //0 to 5;
+  host.brightness = 256*(mouseY/(float)height-0.5); //-128 to +128  
+}
 void mousePressed(){
-  if(!saturation){
-    saturation = true;
-    host.img = get(0, 0, width, height); 
-    host.init();
-    background(0);
-  } else {
-    savePicture();
-  }
+  if (!saturation) {
+      println("contrast: " + host.contrast + " | brightness: " + host.brightness);
+      saturation = true;
+      host.img = get(0, 0, width, height); 
+      host.init();
+      background(0);
+      loadPixels();
+    } else if (saturation){
+      savePicture();
+    } 
 }
 void savePicture(){
   Date date = new Date();

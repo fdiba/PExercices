@@ -6,13 +6,16 @@ class Particle {
   PVector translation;
   PVector jump;
   boolean init;
+  float tj;
 
   Particle() {
 
     translation = new PVector(random(10000), random(10000));
     location = plocation = new PVector();
 
-    jump = new PVector(0.005, 0.005);
+    tj = 2000;
+
+    jump = new PVector(random(0.001, 0.01), random(0.001, 0.01));
     //location = new PVector(random(640), random(480));
     
     
@@ -27,18 +30,11 @@ class Particle {
     translation.add(jump);
   }
   void getColorAndActUponIt() {
-
     int loc = (int)location.x + (int)location.y * host.img.width;
-    
-    float r = red(host.img.pixels[loc]);
-    //float g = green(host.img.pixels[(int)loc]);
-    //float b = blue(host.img.pixels[(int)loc]); 
-    couleur = color(r);
+    couleur = host.img.pixels[loc];
   }
   void display() {
     stroke(couleur);
-    
-    
     if(init){
       line(plocation.x, plocation.y, location.x, location.y);
     } else {
