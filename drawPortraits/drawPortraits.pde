@@ -2,10 +2,12 @@ PImage img;
 PVector location;
 Menu menu;
 boolean saturation;
+ParticleSystem ps;
 
 void setup(){
   size(640,480);
   menu = new Menu();
+  ps = new ParticleSystem();
   
   img = loadImage("Scarlett-Johansson-faces.jpg");
   if(img.width > width && img.width > img.height){
@@ -20,12 +22,15 @@ void setup(){
 
 void draw(){
   background(0);
-  image(img, location.x, location.y);
+  
   
   if(!saturation) {
+    image(img, location.x, location.y);
     loadPixels();
       withdrawColors();
     updatePixels();
+  } else {
+    ps.display();
   }
 }
 
@@ -59,10 +64,14 @@ void withdrawColors(){
 }
 void keyPressed(){
   if (key == CODED) {
-    if (keyCode == UP) {
+    if (keyCode == UP && !saturation) {
       menu.addSaturation();
-    } else if (keyCode == DOWN) {
+    } else if (keyCode == DOWN && !saturation) {
       menu.reduceSaturation();
     }
+    //println(menu.brightness);
   }
+}
+void mousePressed(){
+ saturation = true; 
 }
