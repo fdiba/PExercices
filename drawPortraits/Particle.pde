@@ -9,13 +9,22 @@ class Particle{
     
     translation = new PVector(random(10000), random(10000));
     location = new PVector();
+    
     jump = new PVector(0.001, 0.001);
     couleur = color(255);
   }
   void update(){
     location.x = map(noise(translation.x), 0, 1, 0, width);
     location.y = map(noise(translation.y), 0, 1, 0, height);
+    
+    getColorAndActUponIt();
+    
     translation.add(jump);
+  }
+  void getColorAndActUponIt(){
+    
+    //if(location.x >= 
+    
   }
   void display(){
     stroke(couleur);
