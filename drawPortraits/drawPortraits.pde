@@ -29,7 +29,7 @@ void draw(){
       host.withdrawColors();
     updatePixels();
   } else {
-    ps.update();
+    ps.run();
   }
 }
 void keyPressed(){
@@ -52,7 +52,6 @@ void mousePressed(){
       host.img = get(0, 0, width, height); 
       host.init();
       background(0);
-      loadPixels();
     } else if (saturation){
       savePicture();
     } 

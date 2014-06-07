@@ -2,41 +2,108 @@ class Particle {
 
   PVector location;
   PVector plocation;
+  PVector destination;
+  PVector velocity;
   color couleur;
-  PVector translation;
-  PVector jump;
+  //PVector translation;
+  //PVector jump;
   boolean init;
+  float lifespan;
+  int maxSpeed;
+  int maxValue;
+  int minValue;
 
   Particle() {
-
-    translation = new PVector(random(10000), random(10000));
-    location = plocation = new PVector();
-
-    jump = new PVector(random(0.001, 0.01), random(0.001, 0.01));
-     
-    couleur = color(255,0,0);
+    location = plocation = new PVector(random(width), random(height));
+    init();
+  }
+  Particle(PVector _location, int _lifespan) {
+    location = plocation = _location.get();
+    lifespan = _lifespan;
+    init();
+  }
+  void init(){
+    minValue = -200;
+    maxValue = 200;
+    destination = location.get();
+    PVector rd = new PVector(random(minValue, maxValue), random(minValue, maxValue));
+    destination.add(rd);
+    couleur = color(0, 255, 0);
+    lifespan = 20;  
+    maxSpeed = 2;
+    velocity = new PVector();
   }
   void update() {
-    location.x = map(noise(translation.x), 0, 1, 0, width);
-    location.y = map(noise(translation.y), 0, 1, 0, height);
+    
+    PVector acceleration = PVector.sub(destination, location);
+    acceleration.normalize();
+    acceleration.mult(.1);
+    velocity.add(acceleration);
+    velocity.limit(maxSpeed);
+    location.add(velocity);
+    
+    if(location.x > width) {
+      location.x = width;
+    } else if (location.x < 0){
+      location.x = 0;
+    }
+    
+    if(location.y > height) {
+      location.y = height;
+    } else if (location.y < 0){
+      location.y = 0;
+    }
     
     getColorAndActUponIt();
+
+    float distance = dist(location.x, location.y, destination.x, destination.y);
     
-    translation.add(jump);
+    if(distance <= 30) {
+      
+      PVector rd = new PVector(random(minValue, maxValue), random(minValue, maxValue));
+      destination.add(rd);
+      
+    }
+
   }
   void getColorAndActUponIt() {
     int loc = (int)location.x + (int)location.y * host.img.width;
-    couleur = host.img.pixels[loc];
+ 
+    if(loc < host.img.pixels.length-1){
+ 
+      couleur = host.img.pixels[loc];
+      
+      if(couleur != 0xff000000) {
+        host.img.pixels[loc] = 0xff000000;
+        lifespan += 6;
+      } else {
+        lifespan -= 6;
+      }
+    } else {
+      lifespan = 0; 
+    }
+  }
+  boolean isDead() {
+    if(lifespan <= 0.0) {
+        return true;
+      } else {
+        return false;
+      }
   }
   void display() {
     stroke(couleur);
     if(init){
-      line(plocation.x, plocation.y, location.x, location.y);
+      if(couleur > 0xff000000) line(plocation.x, plocation.y, location.x, location.y);
     } else {
-      point(location.x, location.y);
+      if(couleur > 0xff00ff00) point(location.x, location.y);
       init = true;
     }
     plocation = location.get();
+    //displayDestination();
+  }
+  void displayDestination(){
+    stroke(255,0,0);
+    point(destination.x, destination.y);
   }
 }
 

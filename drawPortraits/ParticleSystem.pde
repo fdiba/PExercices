@@ -8,23 +8,41 @@ class ParticleSystem{
   ParticleSystem(){
     
     particles = new ArrayList<Particle>();
-    for (int i=0; i<100; i++){
+    for (int i=0; i<2; i++){
       particles.add(new Particle());
     }  
   
   }
+  void run(){
+    host.img.loadPixels();
+    update();
+    host.img.updatePixels();
+    display();
+    
+  }
   void update(){
+    
+    int numParticles = particles.size();
+    
+    for(int i = numParticles-1; i >= 0; i--){
+      Particle p = (Particle) particles.get(i);
+      p.update();
+      if (p.isDead()) {
+        particles.remove(i);
+      } else if (p.lifespan >= 100 && numParticles-1 < 300) {
+        particles.add(new Particle(p.location, 10));
+        p.lifespan = 10;
+      }
+    }
+    println(particles.size());
+  }
+  void display(){
     it = particles.iterator();
 
     while (it.hasNext()) {
     
          Particle p = it.next();
-         p.update();
          p.display();
-         /*if (p.isDead()) {
-             it.remove();
-         }*/
     }
-    
   }
 }
