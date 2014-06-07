@@ -13,7 +13,6 @@ class Particle {
   int distMin;
   int spanUp;
   int spanDown;
-  int cValue;
 
   Particle() {
     location = plocation = new PVector(random(width), random(height));
@@ -25,7 +24,6 @@ class Particle {
     init();
   }
   void init(){
-    cValue = 0;
     spanUp = 10;
     spanDown = 8;
     distMin = 10;
