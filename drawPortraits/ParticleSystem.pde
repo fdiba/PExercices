@@ -8,7 +8,7 @@ class ParticleSystem{
   ParticleSystem(){
     
     particles = new ArrayList<Particle>();
-    for (int i=0; i<2; i++){
+    for (int i=0; i<20; i++){
       particles.add(new Particle());
     }  
   
@@ -29,7 +29,7 @@ class ParticleSystem{
       p.update();
       if (p.isDead()) {
         particles.remove(i);
-      } else if (p.lifespan >= 100 && numParticles-1 < 300) {
+      } else if (p.lifespan >= 100) {
         particles.add(new Particle(p.location, 10));
         p.lifespan = 10;
       }

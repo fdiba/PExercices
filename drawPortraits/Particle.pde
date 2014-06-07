@@ -5,13 +5,14 @@ class Particle {
   PVector destination;
   PVector velocity;
   color couleur;
-  //PVector translation;
-  //PVector jump;
   boolean init;
   float lifespan;
   int maxSpeed;
   int maxValue;
   int minValue;
+  int distMin;
+  int spanUp;
+  int spanDown;
 
   Particle() {
     location = plocation = new PVector(random(width), random(height));
@@ -23,8 +24,11 @@ class Particle {
     init();
   }
   void init(){
-    minValue = -200;
-    maxValue = 200;
+    spanUp = 8;
+    spanDown = 8;
+    distMin = 10;
+    minValue = -100;
+    maxValue = 100;
     destination = location.get();
     PVector rd = new PVector(random(minValue, maxValue), random(minValue, maxValue));
     destination.add(rd);
@@ -58,7 +62,7 @@ class Particle {
 
     float distance = dist(location.x, location.y, destination.x, destination.y);
     
-    if(distance <= 30) {
+    if(distance <= distMin) {
       
       PVector rd = new PVector(random(minValue, maxValue), random(minValue, maxValue));
       destination.add(rd);
@@ -75,9 +79,9 @@ class Particle {
       
       if(couleur != 0xff000000) {
         host.img.pixels[loc] = 0xff000000;
-        lifespan += 6;
+        lifespan += spanUp;
       } else {
-        lifespan -= 6;
+        lifespan -= spanDown;
       }
     } else {
       lifespan = 0; 
