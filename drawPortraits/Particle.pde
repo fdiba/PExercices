@@ -58,15 +58,13 @@ class Particle {
       location.y = 0;
     }
     
-    getColorAndActUponIt();
+    //getColorAndActUponIt();
 
     float distance = dist(location.x, location.y, destination.x, destination.y);
     
     if(distance <= distMin) {
-      
       PVector rd = new PVector(random(minValue, maxValue), random(minValue, maxValue));
       destination.add(rd);
-      
     }
 
   }
@@ -78,17 +76,24 @@ class Particle {
       couleur = host.img.pixels[loc];
       
       if(!host.pix[loc]) {
-        host.pix[loc] = true;
         
+        host.pix[loc] = true;
         float r = red(couleur);
         spanUp = r/255;
         
-        lifespan += spanUp;
+        if(r > 127){ 
+          //lifespan += spanUp*2;
+          lifespan += spanUp;
+        }  else {
+          lifespan -= spanUp;
+        }
+
       } else {
         lifespan -= spanDown;
       }
     } else {
-        lifespan = 0; 
+      println(loc + " " + pixels.length + " " + host.img.pixels.length);  
+      lifespan = 0; 
     }
         
   }
