@@ -29,8 +29,8 @@ class ParticleSystem{
       p.update();
       if (p.isDead()) {
         particles.remove(i);
-      } else if (p.lifespan >= 100) {
-        particles.add(new Particle(p.location, 10));
+      } else if (p.lifespan >= 23) {
+        particles.add(new Particle(p.location, 20));
         p.lifespan = 10;
       }
     }

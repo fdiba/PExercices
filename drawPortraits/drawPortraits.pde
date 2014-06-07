@@ -58,6 +58,7 @@ void mousePressed(){
       host.img = get(0, 0, width, height); 
       host.init();
       background(0);
+      host.setPix();
     } else if (saturation){
       savePicture();
     } 

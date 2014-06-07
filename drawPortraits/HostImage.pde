@@ -7,6 +7,7 @@ class HostImage {
   PApplet parent;
   float contrast;
   float brightness;
+  boolean[] pix;
 
   HostImage(PApplet _parent, String str) {
     
@@ -18,7 +19,7 @@ class HostImage {
     init();
   }
   void resize(int _width, int _height) {
-    img.resize(_width, _height); 
+    img.resize(_width, _height);
     init();
   }
   void init() {
@@ -26,6 +27,12 @@ class HostImage {
     height = img.height;
     location.y = (parent.height - height)/2;
     location.x = (parent.width - width)/2;
+  }
+  void setPix(){
+    pix = new boolean[pixels.length];
+    for (int i=0; i<pix.length; i++){
+      pix[i] = false;
+    } 
   }
   void withdrawColors() {
 

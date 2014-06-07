@@ -11,11 +11,12 @@ class Particle {
   int maxValue;
   int minValue;
   int distMin;
-  int spanUp;
-  int spanDown;
+  float spanUp;
+  float spanDown;
 
   Particle() {
     location = plocation = new PVector(random(width), random(height));
+    lifespan = 20;  
     init();
   }
   Particle(PVector _location, int _lifespan) {
@@ -24,16 +25,15 @@ class Particle {
     init();
   }
   void init(){
-    spanUp = 10;
-    spanDown = 8;
+    spanUp = 0;
+    spanDown = 1;
     distMin = 10;
-    minValue = -100;
-    maxValue = 100;
+    minValue = -30;
+    maxValue = 30;
     destination = location.get();
     PVector rd = new PVector(random(minValue, maxValue), random(minValue, maxValue));
     destination.add(rd);
     couleur = color(0, 255, 0);
-    lifespan = 20;  
     maxSpeed = 1;
     velocity = new PVector();
   }
@@ -73,19 +73,23 @@ class Particle {
   void getColorAndActUponIt() {
     int loc = (int)location.x + (int)location.y * host.img.width;
  
-   // if(loc < host.img.pixels.length-1){
+    if(loc < host.img.pixels.length-1){
  
       couleur = host.img.pixels[loc];
       
-      if(couleur != 0xff000000) {
-        host.img.pixels[loc] = 0xff000000;
+      if(!host.pix[loc]) {
+        host.pix[loc] = true;
+        
+        float r = red(couleur);
+        spanUp = r/255;
+        
         lifespan += spanUp;
       } else {
         lifespan -= spanDown;
       }
-    //} else {
-     // lifespan = 0; 
-    //}
+    } else {
+        lifespan = 0; 
+    }
         
   }
   boolean isDead() {
