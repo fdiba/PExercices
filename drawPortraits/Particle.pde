@@ -13,6 +13,7 @@ class Particle {
   int distMin;
   int spanUp;
   int spanDown;
+  int cValue;
 
   Particle() {
     location = plocation = new PVector(random(width), random(height));
@@ -24,7 +25,8 @@ class Particle {
     init();
   }
   void init(){
-    spanUp = 8;
+    cValue = 0;
+    spanUp = 10;
     spanDown = 8;
     distMin = 10;
     minValue = -100;
@@ -34,7 +36,7 @@ class Particle {
     destination.add(rd);
     couleur = color(0, 255, 0);
     lifespan = 20;  
-    maxSpeed = 2;
+    maxSpeed = 1;
     velocity = new PVector();
   }
   void update() {
@@ -73,7 +75,7 @@ class Particle {
   void getColorAndActUponIt() {
     int loc = (int)location.x + (int)location.y * host.img.width;
  
-    if(loc < host.img.pixels.length-1){
+   // if(loc < host.img.pixels.length-1){
  
       couleur = host.img.pixels[loc];
       
@@ -83,9 +85,10 @@ class Particle {
       } else {
         lifespan -= spanDown;
       }
-    } else {
-      lifespan = 0; 
-    }
+    //} else {
+     // lifespan = 0; 
+    //}
+        
   }
   boolean isDead() {
     if(lifespan <= 0.0) {
@@ -97,7 +100,8 @@ class Particle {
   void display() {
     stroke(couleur);
     if(init){
-      if(couleur > 0xff000000) line(plocation.x, plocation.y, location.x, location.y);
+      if(couleur > 0xff00ff00) point(location.x, location.y);
+      //if(couleur > 0xff000000) line(plocation.x, plocation.y, location.x, location.y);
     } else {
       if(couleur > 0xff00ff00) point(location.x, location.y);
       init = true;

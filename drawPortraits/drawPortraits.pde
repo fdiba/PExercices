@@ -22,6 +22,12 @@ void setup(){
 
 void draw(){
   
+  int a = round(10*(mouseX/(float) width));
+  int b = round(10*(mouseY/(float) height));
+ 
+  
+  println(a + " " + b);
+  
   //image(host.img, host.location.x, host.location.y);
   if(!saturation) {
     image(host.img, host.location.x, host.location.y);

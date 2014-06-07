@@ -25,6 +25,7 @@ class HostImage {
     width = img.width;
     height = img.height;
     location.y = (parent.height - height)/2;
+    location.x = (parent.width - width)/2;
   }
   void withdrawColors() {
 
