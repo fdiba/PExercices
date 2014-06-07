@@ -58,7 +58,7 @@ class Particle {
       location.y = 0;
     }
     
-    //getColorAndActUponIt();
+    getColorAndActUponIt();
 
     float distance = dist(location.x, location.y, destination.x, destination.y);
     

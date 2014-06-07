@@ -43,23 +43,29 @@ void keyPressed(){
     } else if (keyCode == DOWN && !saturation) {
       menu.reduceSaturation();
     }
+  } else if (key == ENTER){
+    doStuff();
   }
+}
+void doStuff(){
+  if (!saturation) {
+    println("contrast: " + host.contrast + " | brightness: " + host.brightness);
+    saturation = true;
+    host.img = get(0, 0, width, height); 
+    host.init();
+    background(0);
+    host.setPix();
+    noCursor();
+  } else if (saturation){
+    savePicture();
+  } 
 }
 void mouseMoved(){
   host.contrast = 5f*(mouseX/(float)width); //0 to 5;
   host.brightness = 256*(mouseY/(float)height-0.5); //-128 to +128  
 }
 void mousePressed(){
-  if (!saturation) {
-      println("contrast: " + host.contrast + " | brightness: " + host.brightness);
-      saturation = true;
-      host.img = get(0, 0, width, height); 
-      host.init();
-      background(0);
-      host.setPix();
-    } else if (saturation){
-      savePicture();
-    } 
+  //doStuff();
 }
 void savePicture(){
   Date date = new Date();
