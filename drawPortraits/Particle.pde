@@ -13,6 +13,7 @@ class Particle {
   int distMin;
   float spanUp;
   float spanDown;
+  int treshold;
 
   Particle() {
     location = plocation = new PVector(random(width), random(height));
@@ -25,6 +26,7 @@ class Particle {
     init();
   }
   void init(){
+    treshold = 127;
     spanUp = 0;
     spanDown = 1;
     distMin = 10;
@@ -81,7 +83,7 @@ class Particle {
         float r = red(couleur);
         spanUp = r/255;
         
-        if(r > 127){ 
+        if(r > treshold){ 
           //lifespan += spanUp*2;
           lifespan += spanUp;
         }  else {

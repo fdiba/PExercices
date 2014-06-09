@@ -44,7 +44,7 @@ void keyPressed(){
       menu.reduceSaturation();
     }
   } else if (key == ENTER){
-    doStuff();
+    //doStuff();
   }
 }
 void doStuff(){
@@ -65,7 +65,7 @@ void mouseMoved(){
   host.brightness = 256*(mouseY/(float)height-0.5); //-128 to +128  
 }
 void mousePressed(){
-  //doStuff();
+  doStuff();
 }
 void savePicture(){
   Date date = new Date();
