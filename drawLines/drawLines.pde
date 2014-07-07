@@ -1,4 +1,9 @@
 import SimpleOpenNI.SimpleOpenNI;
+import ddf.minim.*;
+
+
+Minim minim;
+AudioPlayer player;
 
 Menu menu;
 
@@ -22,6 +27,10 @@ SimpleOpenNI context;
 
 void setup(){
   size(640, 480, OPENGL);
+  
+  minim = new Minim(this);
+  player = minim.loadFile("02-Hourglass.mp3");
+  player.loop();
   
   lowestValue = 950;
   highestValue = 2300;
@@ -78,6 +87,13 @@ void draw(){
     if(currentPoint.z > lowestValue && currentPoint.z < highestValue){
       
       //point(currentPoint.x, currentPoint.y, currentPoint.z);
+   
+      int j = (int) map(i, 0, depthMapRealWorld.length, 0, player.bufferSize()*480);
+      //j = (int) map(j, 0, player.bufferSize(), 0, width);
+      
+      //println(depthMapRealWorld.length/480+" "+player.bufferSize()+" "+ j);
+      
+      currentPoint.add(new PVector(0, 0, player.left.get(j/480)*350));
       
       if (oldPoint != null){
         line(oldPoint.x, oldPoint.y, oldPoint.z, currentPoint.x, currentPoint.y, currentPoint.z);
