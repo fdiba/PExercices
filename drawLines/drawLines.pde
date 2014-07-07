@@ -1,17 +1,23 @@
 import SimpleOpenNI.SimpleOpenNI;
 
+Menu menu;
+
 int lowestValue;
 int highestValue;
 PVector[] depthMapRealWorld;
 
 int mapWidth;
 int oldLine;
-int ySpace;
 int oldI;
 boolean switchValue;
-
 PVector oldPoint;
 
+int ySpace;
+float zTrans;
+float xTrans;
+float rotateYangle;
+float rotateXangle;
+  
 SimpleOpenNI context;
 
 void setup(){
@@ -19,14 +25,13 @@ void setup(){
   
   lowestValue = 950;
   highestValue = 2300;
-  
-  ySpace = 10;
-  
+    
   context = new SimpleOpenNI(this);
   context.setMirror(true);
   context.enableDepth();  
   mapWidth = context.depthWidth();
-  println(mapWidth);
+  
+  menu = new Menu(new PVector(450, 50));
   
 }
 
@@ -34,11 +39,16 @@ void draw(){
   background(0);
   
   context.update();
+  menu.update();
   
   depthMapRealWorld = context.depthMapRealWorld();
   
-  translate(width/2, height/2, 0);
+  pushMatrix();
+  
+  translate(width/2 + xTrans, height/2, zTrans);
   rotateX(radians(180));
+  rotateY(radians(rotateYangle));
+  rotateX(radians(rotateXangle));
   
   oldPoint = null;
   oldLine = 0;
@@ -81,19 +91,25 @@ void draw(){
     oldI = i;
   }
   
+  popMatrix();
+  
+  menu.display();
+  
 }
 void setSelectedValue(int value) {    
-    
-    if(switchValue){
-      lowestValue += value;
-      lowestValue = constrain(lowestValue, 0, highestValue-100);
-      PApplet.println(lowestValue);
-    } else {
-      highestValue += value;
-      highestValue = constrain(highestValue, lowestValue+100, 7000);
-      PApplet.println(highestValue);
-    }
+  if(switchValue){
+    lowestValue += value;
+    lowestValue = constrain(lowestValue, 0, highestValue-100);
+    PApplet.println(lowestValue);
+  } else {
+    highestValue += value;
+    highestValue = constrain(highestValue, lowestValue+100, 7000);
+    PApplet.println(highestValue);
   }
+}
+void mouseReleased(){
+  menu.resetSliders();
+}
 void keyPressed() {
   if (key == 'l') {
     switchValue = !switchValue;
