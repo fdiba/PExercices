@@ -17,7 +17,11 @@ float rotateXangle;
 float rotateYangle;
 float rotateZangle;
 
+int jCut = 10;
+
 void setup(){
+  
+  frameRate(12);
   
   size(640, 480, OPENGL);
   minim = new Minim(this);
@@ -35,6 +39,7 @@ void setup(){
   menu = new Menu(new PVector(450, 50));  
 }
 void draw(){
+  
   background(0);
   stroke(255);
   strokeWeight(2);
@@ -45,6 +50,12 @@ void draw(){
   
   rotateX(radians(rotateXangle));
   rotateZ(radians(rotateZangle));
+  
+  if(jCut < width) {
+    jCut += 20;
+  } else {
+    jCut = 10; 
+  }
   
   menu.update();
   
@@ -70,14 +81,27 @@ void draw(){
        
        float actualBufferValue = bufferValues.get(j);
        
-       stroke(255);
+       if(j == jCut){
+         stroke(0);
+       } else {
+         stroke(255);
+       }
               
        if(oldVector != null){
          //line(oldVector.x, oldVector.y + oldBufferValue, oldVector.z,
            //   actualVector.x, actualVector.y + actualBufferValue, actualVector.z);
-              
-         line(oldVector.x, oldVector.y, oldVector.z + oldBufferValue,
+           
+           if(j == jCut){
+             //stroke(0);
+           } else {
+             //stroke(255);
+             line(oldVector.x, oldVector.y, oldVector.z + oldBufferValue,
               actualVector.x, actualVector.y, actualVector.z + actualBufferValue);
+           }
+           
+              
+         
+              
        } else {
          /*noStroke();
          fill(255,0,0);
