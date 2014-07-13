@@ -3,7 +3,10 @@ import ddf.minim.*;
 Minim minim;
 AudioPlayer player;
 ArrayList<PVector> pvectors;
-FloatList bufferValues;
+//FloatList bufferValues;
+
+ArrayList<FloatList> buffers;
+
 PVector oldVector;
 float oldBufferValue;
 Menu menu;
@@ -19,6 +22,8 @@ float rotateZangle;
 
 int jCut = 10;
 
+int lineNumber;
+
 void setup(){
   
   frameRate(12);
@@ -27,6 +32,7 @@ void setup(){
   minim = new Minim(this);
   player = minim.loadFile("02-Hourglass.mp3");
   player.loop();
+  player.mute(); 
     
   pvectors = new ArrayList<PVector>(); 
   
@@ -36,7 +42,18 @@ void setup(){
     }
   }
 
-  menu = new Menu(new PVector(450, 50));  
+  menu = new Menu(new PVector(450, 50));
+  
+  buffers = new ArrayList<FloatList>();
+  lineNumber = 0;
+  
+  for (int i=20; i<height; i+=40){
+    
+    FloatList bufferValues = new FloatList();
+    buffers.add(bufferValues);
+    
+  }
+  
 }
 void draw(){
   
@@ -59,65 +76,72 @@ void draw(){
   
   menu.update();
   
-  bufferValues = new FloatList();
+  FloatList bufferValues = new FloatList();
   
    for(int i = 0; i < player.bufferSize(); i++) {
-     
-     //float test = map(i, 0, player.bufferSize(), 0, width ); //------------- make controller
-     float test = map(i, 0, player.bufferSize(), 0, width );
-     
-       bufferValues.append(player.left.get(i)*amplitude); //----------------------- make controller
+       
+     float test = map(i, 0, player.bufferSize(), 0, width ); 
+     bufferValues.append(player.left.get(i)*amplitude);
        
    }
+   
+   if(buffers.size() > 0) buffers.remove(0);
+   buffers.add(bufferValues);
    
    for (int i=20; i<height; i+=40){
      
      oldVector = null;
      oldBufferValue = 0;
      
-     for(int j=10; j<width; j+=20){
-       
-       PVector actualVector = pvectors.get(j+i*width);
-       
-       float actualBufferValue = bufferValues.get(j);
-       
-       if(j == jCut){
-         stroke(0);
-       } else {
-         stroke(255);
-       }
-              
-       if(oldVector != null){
-         //line(oldVector.x, oldVector.y + oldBufferValue, oldVector.z,
-           //   actualVector.x, actualVector.y + actualBufferValue, actualVector.z);
-           
-           if(j == jCut){
-             //stroke(0);
-           } else {
-             //stroke(255);
-             line(oldVector.x, oldVector.y, oldVector.z + oldBufferValue,
-              actualVector.x, actualVector.y, actualVector.z + actualBufferValue);
-           }
-           
-              
-         
-              
-       } else {
-         /*noStroke();
-         fill(255,0,0);
-         ellipse(actualVector.x, actualVector.y, 10, 10);*/
-       }
-         
-       oldVector = actualVector;
-       oldBufferValue = actualBufferValue;
+     //display the same line
+     //FloatList actualBufferValues = buffers.get(buffers.size()-1);
+     //display different lines
+     FloatList actualBufferValues = buffers.get(lineNumber);
      
+     if(actualBufferValues.size() > 0) {
+     
+       editPointsPosition(i, actualBufferValues);
+       
      }
+     
+     lineNumber++;
    }
    
    popMatrix();
    
    menu.display();
+   
+   lineNumber = 0;
+   
 }
+
+void editPointsPosition(int i, FloatList actualBufferValues){
+  
+  for(int j=10; j<width; j+=20){
+         
+    PVector actualVector = pvectors.get(j+i*width);
+       
+    float actualBufferValue = actualBufferValues.get(j);
+          
+    if(oldVector != null){
+         
+      if(j != jCut){
+        
+        float alpha = 255/(lineNumber+1);
+        
+        stroke(255, 255 - alpha);
+        line(oldVector.x, oldVector.y, oldVector.z + oldBufferValue,
+        actualVector.x, actualVector.y, actualVector.z + actualBufferValue);
+      }
+
+    }
+     
+    oldVector = actualVector;
+    oldBufferValue = actualBufferValue;
+       
+  }
+}
+
 void mouseReleased(){
   menu.resetSliders();
 }

@@ -27,7 +27,7 @@ class Menu {
     sliders.get(sliders.size()-1).initValue(0);
     rotateZangle = 0;
     
-    sliders.add(new Slider(new PVector(location.x, location.y + 15*sliders.size()), "amplitude", 0, height, colors[3]));
+    sliders.add(new Slider(new PVector(location.x, location.y + 15*sliders.size()), "amplitude", 0, height, colors[4]));
     sliders.get(sliders.size()-1).initValue(25);
     amplitude = 25;
 
