@@ -2,7 +2,7 @@ import ddf.minim.*;
 
 Minim minim;
 AudioPlayer player;
-ArrayList<PVector> pvectors;
+PVector[] pvectors;
 //FloatList bufferValues;
 
 ArrayList<FloatList> buffers;
@@ -10,7 +10,6 @@ ArrayList<FloatList> buffers;
 PVector oldVector;
 float oldBufferValue;
 Menu menu;
-int amplitude;
 int foo = 1;
 
 float xTrans = 0;
@@ -19,6 +18,8 @@ float zTrans = 0;
 float rotateXangle;
 float rotateYangle;
 float rotateZangle;
+int amplitude;
+
 
 int jCut = 10;
 
@@ -34,13 +35,7 @@ void setup(){
   player.loop();
   player.mute(); 
     
-  pvectors = new ArrayList<PVector>(); 
-  
-  for (int i=0; i<height; i++){
-    for(int j=0; j<width; j++){
-      pvectors.add(new PVector(j, i, 0));
-    }
-  }
+  setVectors();
 
   menu = new Menu(new PVector(450, 50));
   
@@ -119,7 +114,7 @@ void editPointsPosition(int i, FloatList actualBufferValues){
   
   for(int j=10; j<width; j+=20){
          
-    PVector actualVector = pvectors.get(j+i*width);
+    PVector actualVector = pvectors[j+i*width];
        
     float actualBufferValue = actualBufferValues.get(j);
           
@@ -141,7 +136,17 @@ void editPointsPosition(int i, FloatList actualBufferValues){
        
   }
 }
-
+void setVectors(){
+  
+  pvectors = new PVector[width*height]; 
+  
+  for (int i=0; i<height; i++){
+    for(int j=0; j<width; j++){
+      pvectors[j+i*width] = new PVector(j, i, 0);
+    }
+  } 
+  
+}
 void mouseReleased(){
   menu.resetSliders();
 }

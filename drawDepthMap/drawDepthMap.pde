@@ -13,7 +13,7 @@ SimpleOpenNI context;
 
 Menu menu;
 
-ArrayList<PVector> pvectors;
+PVector[] pvectors;
 int[] depthValues;
 boolean switchValue;
 int lowestValue;
@@ -69,11 +69,11 @@ void draw(){
 
 void setVectors(){
   
-  pvectors = new ArrayList<PVector>(); 
+  pvectors = new PVector[width*height]; 
   
   for (int i=0; i<height; i++){
     for(int j=0; j<width; j++){
-      pvectors.add(new PVector(j, i, 0));
+      pvectors[j+i*width] = new PVector(j, i, 0);
     }
   } 
   
@@ -91,7 +91,7 @@ void drawVectors(){
     
     for(int j=10; j<width; j+=10){
       //stroke(255);
-      PVector actualVector = pvectors.get(j+i*width);
+      PVector actualVector = pvectors[j+i*width];
       
       //point(actualVector.x, actualVector.y, actualVector.z);
       
