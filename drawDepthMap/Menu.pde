@@ -29,9 +29,9 @@ class Menu {
     sliders.get(sliders.size()-1).initValue(25);
     amplitude = 25;
     
-    sliders.add(new Slider(new PVector(location.x, location.y + 15*sliders.size()), "depth", 1, 200, colors[5]));
-    sliders.get(sliders.size()-1).initValue(30);
-    depth = 30;
+    sliders.add(new Slider(new PVector(location.x, location.y + 15*sliders.size()), "depth", -200, 200, colors[5]));
+    sliders.get(sliders.size()-1).initValue(20);
+    depth = 20;
 
  
   }

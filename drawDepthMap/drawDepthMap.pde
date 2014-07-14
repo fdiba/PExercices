@@ -131,7 +131,7 @@ void drawVectors(int _ySpace){
   
   PVector oldVector;
   float oldBufferValue;
-  int oldDepthValue;
+  float oldDepthValue;
     
   for (int i=10; i<height; i+= _ySpace){
     
@@ -153,14 +153,14 @@ void drawVectors(int _ySpace){
     
   } 
 }
-void editPointsPosition(PVector oldVector, float oldBufferValue, int i, FloatList actualBufferValues, int oldDepthValue){
+void editPointsPosition(PVector oldVector, float oldBufferValue, int i, FloatList actualBufferValues, float oldDepthValue){
     
-  for(int j=10; j<width; j+=10){
+  for(int j=0; j<width; j+=10){
       
     //stroke(255);
     PVector actualVector = pvectors[j+i*width];
     float actualBufferValue = actualBufferValues.get(j);
-    int depthValue = depthValues[j+i*width];
+    float depthValue = depthValues[j+i*width];
     
     //point(actualVector.x, actualVector.y, actualVector.z);
     
@@ -171,8 +171,10 @@ void editPointsPosition(PVector oldVector, float oldBufferValue, int i, FloatLis
       if(depthValue >= lowestValue && depthValue <= highestValue){
         stroke(255, alpha);
         
-        line(oldVector.x, oldVector.y, oldVector.z - oldDepthValue/depth - oldBufferValue*amplitude,
-        actualVector.x, actualVector.y, actualVector.z - depthValue/depth - actualBufferValue*amplitude);
+        depthValue = map(depthValue, lowestValue, highestValue, -1, 1);
+        
+        line(oldVector.x, oldVector.y, oldVector.z - oldDepthValue*depth - oldBufferValue*amplitude,
+        actualVector.x, actualVector.y, actualVector.z - depthValue*depth - actualBufferValue*amplitude);
         
       } else {
           
@@ -183,10 +185,12 @@ void editPointsPosition(PVector oldVector, float oldBufferValue, int i, FloatLis
           depthValue = highestValue;
         }
         
-      stroke(75, alpha);
-      
-      if(linesVisibility) line(oldVector.x, oldVector.y, oldVector.z - oldDepthValue/depth - oldBufferValue*amplitude,
-      actualVector.x, actualVector.y, actualVector.z - depthValue/depth - actualBufferValue*amplitude);
+        depthValue = map(depthValue, lowestValue, highestValue, -1, 1);
+        
+        stroke(75, alpha);
+        
+        if(linesVisibility) line(oldVector.x, oldVector.y, oldVector.z - oldDepthValue*depth - oldBufferValue*amplitude,
+        actualVector.x, actualVector.y, actualVector.z - depthValue*depth - actualBufferValue*amplitude);
       
       }
       
