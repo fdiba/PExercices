@@ -2,7 +2,7 @@
  * PExercices / drawDepthMap
  * --------------------------------------------------------------------------
  * prog:  Florent Di Bartolo / Interaction Design / http://webodrome.fr/
- * date:  14/07/2014 (m/d/y)
+ * date:  14/07/2014 (d/m/y)
  * --------------------------------------------------------------------------
  */
  
@@ -10,6 +10,8 @@ import SimpleOpenNI.SimpleOpenNI;
 import ddf.minim.*;
 
 SimpleOpenNI context;
+Minim minim;
+AudioPlayer player;
 
 Menu menu;
 
@@ -19,20 +21,34 @@ boolean switchValue;
 int lowestValue;
 int highestValue;
 
+ArrayList<FloatList> buffers;
+int ySpace;
+int lineNumber;
+
+//---- params ------------//
 float xTrans = 0;
 float yTrans = 0;
 float zTrans = 0;
 float rotateXangle;
 float rotateYangle;
 float rotateZangle;
-
+int amplitude;
 int depth;
 
+
 void setup(){
+  
+  frameRate(12);
+  
   size(640, 480, OPENGL);
   context = new SimpleOpenNI(this);
   context.setMirror(true);
   context.enableDepth();
+  
+  minim = new Minim(this);
+  player = minim.loadFile("02-Hourglass.mp3");
+  player.loop();
+  player.mute(); 
   
   lowestValue = 1700;
   highestValue = 2300;
@@ -43,14 +59,24 @@ void setup(){
   
   menu = new Menu(new PVector(450, 50));
   
+  ySpace = 10;
+  buffers = new ArrayList<FloatList>();
+  lineNumber = 0;
+  
+  setBuffers(ySpace);
+  
+  amplitude = 1; 
+  
 }
-
 void draw(){
+  
   background(0);
   context.update();
   menu.update();
   depthValues = context.depthMap();
   //image(depthImage, 0, 0);
+  
+  addAndEraseBuffers();
   
   pushMatrix();
   
@@ -59,14 +85,36 @@ void draw(){
   rotateX(radians(rotateXangle));
   rotateZ(radians(rotateZangle));
   
-  drawVectors();
+  drawVectors(ySpace);
   
   popMatrix();
   
   menu.display();
+  
+  lineNumber = 0;
     
 }
-
+void addAndEraseBuffers(){
+    
+  FloatList bufferValues = new FloatList();
+  
+  for(int i = 0; i < player.bufferSize(); i++) {  
+    float test = map(i, 0, player.bufferSize(), 0, width); 
+    bufferValues.append(player.left.get(i));
+  }
+   
+  if(buffers.size() > 0) buffers.remove(0);
+  buffers.add(bufferValues);
+  
+}
+void setBuffers(int _ySpace){
+  
+  for (int i=10; i<height; i+= _ySpace){
+    FloatList bufferValues = new FloatList();
+    buffers.add(bufferValues);
+  }
+  
+}
 void setVectors(){
   
   pvectors = new PVector[width*height]; 
@@ -78,52 +126,77 @@ void setVectors(){
   } 
   
 }
-
-void drawVectors(){
+void drawVectors(int _ySpace){
   
   PVector oldVector;
+  float oldBufferValue;
   int oldDepthValue;
     
-  for (int i=10; i<height; i+=10){
+  for (int i=10; i<height; i+= _ySpace){
     
     oldVector = null;
     oldDepthValue = 0;
+    oldBufferValue = 0;
     
-    for(int j=10; j<width; j+=10){
-      //stroke(255);
-      PVector actualVector = pvectors[j+i*width];
+    //--- display the same line ----//
+    //FloatList actualBufferValues = buffers.get(buffers.size()-1);
+    
+    //or display different lines ---//
+    FloatList actualBufferValues = buffers.get(lineNumber);
+    
+    if(actualBufferValues.size() > 0) { 
+      editPointsPosition(oldVector, oldBufferValue, i, actualBufferValues, oldDepthValue);
+    }
+    
+    lineNumber++;
+    
+  } 
+}
+void editPointsPosition(PVector oldVector, float oldBufferValue, int i, FloatList actualBufferValues, int oldDepthValue){
+    
+  for(int j=10; j<width; j+=10){
       
-      //point(actualVector.x, actualVector.y, actualVector.z);
+    //stroke(255);
+    PVector actualVector = pvectors[j+i*width];
+    float actualBufferValue = actualBufferValues.get(j);
+    int depthValue = depthValues[j+i*width];
+    
+    //point(actualVector.x, actualVector.y, actualVector.z);
+    
+    if(oldVector != null){
       
-      int depthValue = depthValues[j+i*width];
+      float alpha = map(i, 0, height, 0, 255);
       
-      
-      
-      if(oldVector != null){
+      if(depthValue >= lowestValue && depthValue <= highestValue){
+        stroke(255, alpha);
         
-        if(depthValue >= lowestValue && depthValue <= highestValue){
-          stroke(255);
-        } else {
+        //line(oldVector.x, oldVector.y, oldVector.z - oldDepthValue/depth - oldBufferValue*amplitude,
+        //actualVector.x, actualVector.y, actualVector.z - depthValue/depth - actualBufferValue*amplitude);
+        
+      } else {
           
-          if(depthValue < lowestValue) {
-            //depthValue = lowestValue;
-            depthValue = highestValue;
-          } else if(depthValue > highestValue){
-            depthValue = highestValue;
-          }
-          stroke(75); 
+        if(depthValue < lowestValue) {
+          //depthValue = lowestValue;
+          depthValue = highestValue;
+        } else if(depthValue > highestValue){
+          depthValue = highestValue;
         }
-      
-        line(oldVector.x, oldVector.y, oldVector.z - oldDepthValue/depth,
-        actualVector.x, actualVector.y, actualVector.z - depthValue/depth);
         
-      }
+      stroke(75, alpha); 
       
-      oldVector = actualVector;
-      oldDepthValue = depthValue;
+      }
+    
+      line(oldVector.x, oldVector.y, oldVector.z - oldDepthValue/depth - oldBufferValue*amplitude,
+      actualVector.x, actualVector.y, actualVector.z - depthValue/depth - actualBufferValue*amplitude);
       
     }
-  } 
+    
+    oldVector = actualVector;
+    oldDepthValue = depthValue;
+    oldBufferValue = actualBufferValue;
+    
+  }
+  
 }
 void mouseReleased(){
   menu.resetSliders();

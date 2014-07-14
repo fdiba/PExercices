@@ -1,3 +1,11 @@
+/* --------------------------------------------------------------------------
+ * PExercices / drawMusic
+ * --------------------------------------------------------------------------
+ * prog:  Florent Di Bartolo / Interaction Design / http://webodrome.fr/
+ * date:  14/07/2014 (d/m/y)
+ * --------------------------------------------------------------------------
+ */
+ 
 import ddf.minim.*;
 
 Minim minim;
@@ -7,11 +15,10 @@ PVector[] pvectors;
 
 ArrayList<FloatList> buffers;
 
-PVector oldVector;
-float oldBufferValue;
 Menu menu;
 int foo = 1;
 
+//---- params ------------//
 float xTrans = 0;
 float yTrans = 0;
 float zTrans = 0;
@@ -20,6 +27,8 @@ float rotateYangle;
 float rotateZangle;
 int amplitude;
 
+
+int ySpace;
 
 int jCut = 10;
 
@@ -42,12 +51,9 @@ void setup(){
   buffers = new ArrayList<FloatList>();
   lineNumber = 0;
   
-  for (int i=20; i<height; i+=40){
-    
-    FloatList bufferValues = new FloatList();
-    buffers.add(bufferValues);
-    
-  }
+  ySpace = 40;
+  
+  setBuffers(ySpace);
   
 }
 void draw(){
@@ -71,62 +77,71 @@ void draw(){
   
   menu.update();
   
+  addAndEraseBuffers();
+   
+  drawVectors(ySpace);
+   
+  popMatrix();
+   
+  menu.display();
+   
+  lineNumber = 0;
+   
+}
+void drawVectors(int _ySpace){
+  
+  PVector oldVector;
+  float oldBufferValue;
+    
+  for (int i=20; i<height; i+= _ySpace){
+        
+    oldVector = null;
+    oldBufferValue = 0;
+     
+    //--- display the same line ----//
+    //FloatList actualBufferValues = buffers.get(buffers.size()-1);
+    
+    //or display different lines ---//
+    FloatList actualBufferValues = buffers.get(lineNumber);
+     
+    if(actualBufferValues.size() > 0) { 
+       editPointsPosition(oldVector, oldBufferValue, i, actualBufferValues);
+     }
+     
+     lineNumber++;
+   }
+  
+}
+
+void addAndEraseBuffers(){
+    
   FloatList bufferValues = new FloatList();
   
-   for(int i = 0; i < player.bufferSize(); i++) {
-       
-     float test = map(i, 0, player.bufferSize(), 0, width ); 
-     bufferValues.append(player.left.get(i)*amplitude);
-       
+  for(int i = 0; i < player.bufferSize(); i++) {  
+    float test = map(i, 0, player.bufferSize(), 0, width); 
+    bufferValues.append(player.left.get(i));
    }
    
    if(buffers.size() > 0) buffers.remove(0);
    buffers.add(bufferValues);
    
-   for (int i=20; i<height; i+=40){
-     
-     oldVector = null;
-     oldBufferValue = 0;
-     
-     //display the same line
-     //FloatList actualBufferValues = buffers.get(buffers.size()-1);
-     //display different lines
-     FloatList actualBufferValues = buffers.get(lineNumber);
-     
-     if(actualBufferValues.size() > 0) {
-     
-       editPointsPosition(i, actualBufferValues);
-       
-     }
-     
-     lineNumber++;
-   }
-   
-   popMatrix();
-   
-   menu.display();
-   
-   lineNumber = 0;
-   
 }
-
-void editPointsPosition(int i, FloatList actualBufferValues){
+void editPointsPosition(PVector oldVector, float oldBufferValue, int i, FloatList actualBufferValues){
   
   for(int j=10; j<width; j+=20){
          
     PVector actualVector = pvectors[j+i*width];
-       
     float actualBufferValue = actualBufferValues.get(j);
           
     if(oldVector != null){
          
       if(j != jCut){
         
-        float alpha = 255/(lineNumber+1);
+        float alpha = map(i, 0, height, 255, 0);
         
         stroke(255, 255 - alpha);
-        line(oldVector.x, oldVector.y, oldVector.z + oldBufferValue,
-        actualVector.x, actualVector.y, actualVector.z + actualBufferValue);
+        line(oldVector.x, oldVector.y, oldVector.z + oldBufferValue*amplitude,
+        actualVector.x, actualVector.y, actualVector.z + actualBufferValue*amplitude);
       }
 
     }
@@ -145,6 +160,14 @@ void setVectors(){
       pvectors[j+i*width] = new PVector(j, i, 0);
     }
   } 
+  
+}
+void setBuffers(int _ySpace){
+  
+  for (int i=10; i<height; i+= _ySpace){
+    FloatList bufferValues = new FloatList();
+    buffers.add(bufferValues);
+  }
   
 }
 void mouseReleased(){

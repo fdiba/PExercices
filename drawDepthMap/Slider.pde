@@ -63,6 +63,8 @@ class Slider {
    
     if (param.equals("depth")) {
       depth = (int) value;
+    } else if (param.equals("amplitude")){
+      amplitude = (int) value;
     } else if (param.equals("xTrans")){
       xTrans = value;
     } else if (param.equals("zTrans")){
