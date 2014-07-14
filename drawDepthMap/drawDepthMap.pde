@@ -24,6 +24,7 @@ int highestValue;
 ArrayList<FloatList> buffers;
 int ySpace;
 int lineNumber;
+boolean linesVisibility;
 
 //---- params ------------//
 float xTrans = 0;
@@ -66,6 +67,7 @@ void setup(){
   setBuffers(ySpace);
   
   amplitude = 1; 
+  linesVisibility = true; 
   
 }
 void draw(){
@@ -91,8 +93,7 @@ void draw(){
   
   menu.display();
   
-  lineNumber = 0;
-    
+  lineNumber = 0; 
 }
 void addAndEraseBuffers(){
     
@@ -170,8 +171,8 @@ void editPointsPosition(PVector oldVector, float oldBufferValue, int i, FloatLis
       if(depthValue >= lowestValue && depthValue <= highestValue){
         stroke(255, alpha);
         
-        //line(oldVector.x, oldVector.y, oldVector.z - oldDepthValue/depth - oldBufferValue*amplitude,
-        //actualVector.x, actualVector.y, actualVector.z - depthValue/depth - actualBufferValue*amplitude);
+        line(oldVector.x, oldVector.y, oldVector.z - oldDepthValue/depth - oldBufferValue*amplitude,
+        actualVector.x, actualVector.y, actualVector.z - depthValue/depth - actualBufferValue*amplitude);
         
       } else {
           
@@ -182,12 +183,15 @@ void editPointsPosition(PVector oldVector, float oldBufferValue, int i, FloatLis
           depthValue = highestValue;
         }
         
-      stroke(75, alpha); 
+      stroke(75, alpha);
+      
+      if(linesVisibility) line(oldVector.x, oldVector.y, oldVector.z - oldDepthValue/depth - oldBufferValue*amplitude,
+      actualVector.x, actualVector.y, actualVector.z - depthValue/depth - actualBufferValue*amplitude);
       
       }
-    
-      line(oldVector.x, oldVector.y, oldVector.z - oldDepthValue/depth - oldBufferValue*amplitude,
-      actualVector.x, actualVector.y, actualVector.z - depthValue/depth - actualBufferValue*amplitude);
+      
+      //line(oldVector.x, oldVector.y, oldVector.z - oldDepthValue/depth - oldBufferValue*amplitude,
+      //actualVector.x, actualVector.y, actualVector.z - depthValue/depth - actualBufferValue*amplitude);
       
     }
     
@@ -213,9 +217,11 @@ void setSelectedValue(int value) {
   }
 }
 void keyPressed() {
-  if (key == 'l') {
+  if (key == 'v') {
+    linesVisibility = !linesVisibility;
+  } else if (key == 'l') {
     switchValue = !switchValue;
-  }else if (keyCode == UP) {
+  } else if (keyCode == UP) {
     setSelectedValue(+50);
   } else if (keyCode == DOWN) {
     setSelectedValue(-50);

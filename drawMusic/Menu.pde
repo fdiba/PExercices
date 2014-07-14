@@ -6,9 +6,7 @@ class Menu {
   Menu(PVector _location) {
     
     location = _location;
-    
-    //setColors();
-    
+        
     sliders = new ArrayList<Slider>();
     
     sliders.add(new Slider(location, "xTrans", -2000, 2000, colors[0]));
@@ -48,13 +46,5 @@ class Menu {
   }
   void display(){
     for (Slider s: sliders) s.display();
-  }
-  void setColors(){
-    /*colors = new ArrayList<Integer>();
-    colors.add(color(240, 65, 50)); //red
-    colors.add(color(135, 205, 137)); //green
-    colors.add(color(40, 135, 145)); //blue green
-    colors.add(color(252, 177, 135)); //orange
-    colors.add(color(15, 65, 85)); //dark blue*/
   }
 }
