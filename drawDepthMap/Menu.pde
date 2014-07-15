@@ -37,6 +37,9 @@ class Menu {
     sliders.get(sliders.size()-1).initValue(20);
     depth = 20;
 
+    sliders.add(new Slider(new PVector(location.x, location.y + 15*sliders.size()), "ySpace", 10, 150, colors[6]));
+    sliders.get(sliders.size()-1).initValue(10);
+    ySpace = 10;
  
   }
   protected void update(){

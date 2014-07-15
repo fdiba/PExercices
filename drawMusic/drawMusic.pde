@@ -53,10 +53,10 @@ void setup(){
   
   buffers = new ArrayList<FloatList>();
   lineNumber = 0;
-  
-  ySpace = 40;
-  
+    
   setBuffers(ySpace);
+  
+  println("use multiple buffers: press b"); 
   
 }
 void draw(){

@@ -75,6 +75,8 @@ class Slider {
       rotateYangle = value;
     } else if (param.equals("rotateZ")){
       rotateZangle = value;
+    } else if (param.equals("ySpace")){
+      ySpace = (int) value;
     }
    
     println(param + ": " + value);

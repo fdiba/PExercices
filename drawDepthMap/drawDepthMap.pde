@@ -61,7 +61,7 @@ void setup(){
   
   menu = new Menu(new PVector(450, 50));
   
-  ySpace = 10;
+  //ySpace = 10;
   buffers = new ArrayList<FloatList>();
   lineNumber = 0;
   
@@ -80,7 +80,6 @@ void draw(){
   context.update();
   menu.update();
   depthValues = context.depthMap();
-  //image(depthImage, 0, 0);
   
   addAndEraseBuffers();
   
@@ -93,6 +92,7 @@ void draw(){
   rotateZ(radians(rotateZangle));
   
   translate(-width/2, -height/2, 0);
+  
   drawVectors(ySpace);
   
   popMatrix();
@@ -177,12 +177,14 @@ void editPointsPosition(PVector oldVector, float oldBufferValue, int i, FloatLis
     if(oldVector != null){
             
       if(depthValue >= lowestValue && depthValue <= highestValue){
-        stroke(255);
+        
+        depthValue = setColorWeightDepthValue(depthValue, color(255));
+        
+        line(oldVector.x, oldVector.y, oldVector.z - oldDepthValue*depth - oldBufferValue*amplitude,
+             actualVector.x, actualVector.y, actualVector.z - depthValue*depth - actualBufferValue*amplitude);
 
       } else {
-        
-        stroke(75); 
-        
+                
         if(depthValue < lowestValue) {
           //depthValue = lowestValue;
           depthValue = highestValue;
@@ -190,15 +192,12 @@ void editPointsPosition(PVector oldVector, float oldBufferValue, int i, FloatLis
           depthValue = highestValue;
         }
 
-      }
-      
-      float weight = map(depthValue, lowestValue, highestValue, 4, 1);
-      depthValue = map(depthValue, lowestValue, highestValue, -1, 1);
-      
-      strokeWeight(weight);
+        depthValue = setColorWeightDepthValue(depthValue, color(75));
         
-      if(linesVisibility) line(oldVector.x, oldVector.y, oldVector.z - oldDepthValue*depth - oldBufferValue*amplitude,
-      actualVector.x, actualVector.y, actualVector.z - depthValue*depth - actualBufferValue*amplitude);
+        if(linesVisibility) line(oldVector.x, oldVector.y, oldVector.z - oldDepthValue*depth - oldBufferValue*amplitude,
+                                 actualVector.x, actualVector.y, actualVector.z - depthValue*depth - actualBufferValue*amplitude);
+             
+      }
       
     }
     
@@ -207,6 +206,17 @@ void editPointsPosition(PVector oldVector, float oldBufferValue, int i, FloatLis
     oldBufferValue = actualBufferValue;
     
   }
+  
+}
+float setColorWeightDepthValue(float depthValue, int couleur){
+  
+  float weight = map(depthValue, lowestValue, highestValue, 4, 1);
+  depthValue = map(depthValue, lowestValue, highestValue, -1, 1);
+      
+  stroke(couleur);
+  strokeWeight(weight);
+        
+  return depthValue;
   
 }
 void setSelectedValue(int value) {    
