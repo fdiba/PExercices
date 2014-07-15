@@ -18,10 +18,12 @@ Menu menu;
 PVector[] pvectors;
 int[] depthValues;
 boolean switchValue;
+boolean useColors;
 
 ArrayList<FloatList> buffers;
 int ySpace;
 int lineNumber;
+ArrayList<Integer> ramp;
 
 //---- key params --------//
 boolean linesVisibility;
@@ -52,7 +54,9 @@ void setup(){
   minim = new Minim(this);
   player = minim.loadFile("02-Hourglass.mp3");
   player.loop();
-  player.mute(); 
+  player.mute();
+  
+  createRamp();
   
   lowestValue = 1700;
   highestValue = 2300;
@@ -68,10 +72,44 @@ void setup(){
   
   linesVisibility = true; 
   
-  println("depth limits: press l + UP OR DOWN" + "\n" +
+  println("----------------------------------" + "\n" +
+          "depth limits: press l + UP OR DOWN" + "\n" +
           "dark lines visibility: press v" + "\n" +
-          "use multiple buffers: press b"); 
+          "use multiple buffers: press b" + "\n" +
+          "----------------------------------");
   
+}
+void createRamp(){
+  
+  //from red (FF0000) to yellow (FFFF00) to green (00FF00)
+  
+  int r = 255;
+  int g = 0;
+  int b = 0;
+  int step = 1;
+
+  ramp = new ArrayList<Integer>();
+  
+  boolean isDone = false;
+  
+  while(!isDone){
+      
+    if(g<255){
+      
+      g += step;
+      g = constrain(g, 0, 255);
+      ramp.add(color(r, g, b));
+      
+    } else if(g==255){
+
+      r -= step;
+      r = constrain(r, 0, 255);
+      ramp.add(color(r, g, b));
+      if(r==0)isDone = true;
+    }
+    
+  }
+  println(ramp.size());
 }
 void draw(){
   
@@ -162,6 +200,10 @@ void drawVectors(int _ySpace){
     
   } 
 }
+int setColor(float depthValue){
+  int colorId = (int)map(depthValue, lowestValue, highestValue, 0, ramp.size()-1);
+  return ramp.get(colorId);
+}
 void editPointsPosition(PVector oldVector, float oldBufferValue, int i, FloatList actualBufferValues, float oldDepthValue){
     
   for(int j=0; j<width; j+=10){
@@ -177,7 +219,15 @@ void editPointsPosition(PVector oldVector, float oldBufferValue, int i, FloatLis
             
       if(depthValue >= lowestValue && depthValue <= highestValue){
         
-        depthValue = setColorWeightDepthValue(depthValue, color(255));
+        int c;
+        
+        if(useColors){
+          c = setColor(depthValue);  
+        } else {
+          c = color(255);
+        }
+        
+        depthValue = setColorWeightDepthValue(depthValue, c);
         
         float ovz = oldVector.z - oldDepthValue*depth - oldBufferValue*amplitude;
         float avz = actualVector.z - depthValue*depth - actualBufferValue*amplitude;
@@ -194,7 +244,15 @@ void editPointsPosition(PVector oldVector, float oldBufferValue, int i, FloatLis
           depthValue = highestValue;
         }
 
-        depthValue = setColorWeightDepthValue(depthValue, color(75));
+        int c;
+        
+        if(useColors){
+          c = setColor(depthValue);  
+        } else {
+          c = color(75);
+        }
+        
+        depthValue = setColorWeightDepthValue(depthValue, c);
         
         float ovz = oldVector.z - oldDepthValue*depth - oldBufferValue*amplitude;
         float avz = actualVector.z - depthValue*depth - actualBufferValue*amplitude;
@@ -244,6 +302,8 @@ void keyPressed() {
     linesVisibility = !linesVisibility;
   } else if (key == 'b') {
     multipleBuffers = !multipleBuffers;
+  } else if (key == 'c') {
+    useColors = !useColors;
   } else if (key == 'l') {
     switchValue = !switchValue;
   } else if (keyCode == UP) {
