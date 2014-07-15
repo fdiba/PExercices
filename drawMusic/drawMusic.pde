@@ -18,6 +18,9 @@ ArrayList<FloatList> buffers;
 Menu menu;
 int foo = 1;
 
+//---- key params --------//
+boolean multipleBuffers;
+
 //---- params ------------//
 float xTrans = 0;
 float yTrans = 0;
@@ -64,10 +67,13 @@ void draw(){
   
   pushMatrix();
   
-  translate(xTrans, yTrans, zTrans);
+  translate(width/2 + xTrans, height/2 + yTrans, zTrans);
   
   rotateX(radians(rotateXangle));
+  rotateY(radians(rotateYangle));
   rotateZ(radians(rotateZangle));
+  
+  translate(-width/2, -height/2, 0);
   
   if(jCut < width) {
     jCut += 20;
@@ -98,11 +104,15 @@ void drawVectors(int _ySpace){
     oldVector = null;
     oldBufferValue = 0;
      
-    //--- display the same line ----//
-    //FloatList actualBufferValues = buffers.get(buffers.size()-1);
+    FloatList actualBufferValues;
     
-    //or display different lines ---//
-    FloatList actualBufferValues = buffers.get(lineNumber);
+    if(multipleBuffers){
+      //display different lines
+      actualBufferValues = buffers.get(lineNumber);
+    } else {
+      //display the same line
+      actualBufferValues = buffers.get(buffers.size()-1); 
+    }
      
     if(actualBufferValues.size() > 0) { 
        editPointsPosition(oldVector, oldBufferValue, i, actualBufferValues);
@@ -137,9 +147,9 @@ void editPointsPosition(PVector oldVector, float oldBufferValue, int i, FloatLis
          
       if(j != jCut){
         
-        float alpha = map(i, 0, height, 255, 0);
+        //float alpha = map(i, 0, height, 255, 0);
         
-        stroke(255, 255 - alpha);
+        stroke(255);
         line(oldVector.x, oldVector.y, oldVector.z + oldBufferValue*amplitude,
         actualVector.x, actualVector.y, actualVector.z + actualBufferValue*amplitude);
       }
@@ -169,6 +179,12 @@ void setBuffers(int _ySpace){
     buffers.add(bufferValues);
   }
   
+}
+//------------- keyboard ------------------//
+void keyPressed() {
+  if (key == 'b') {
+    multipleBuffers = !multipleBuffers;
+  }
 }
 void mouseReleased(){
   menu.resetSliders();

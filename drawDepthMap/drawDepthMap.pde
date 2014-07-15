@@ -18,13 +18,16 @@ Menu menu;
 PVector[] pvectors;
 int[] depthValues;
 boolean switchValue;
-int lowestValue;
-int highestValue;
 
 ArrayList<FloatList> buffers;
 int ySpace;
 int lineNumber;
+
+//---- key params --------//
 boolean linesVisibility;
+boolean multipleBuffers;
+int lowestValue;
+int highestValue;
 
 //---- params ------------//
 float xTrans = 0;
@@ -54,8 +57,6 @@ void setup(){
   lowestValue = 1700;
   highestValue = 2300;
   
-  strokeWeight(2);
-  
   setVectors();
   
   menu = new Menu(new PVector(450, 50));
@@ -66,8 +67,11 @@ void setup(){
   
   setBuffers(ySpace);
   
-  amplitude = 1; 
   linesVisibility = true; 
+  
+  println("depth limits: press l + UP OR DOWN" + "\n" +
+          "dark lines visibility: press v" + "\n" +
+          "use multiple buffers: press b"); 
   
 }
 void draw(){
@@ -81,12 +85,14 @@ void draw(){
   addAndEraseBuffers();
   
   pushMatrix();
-  
-  translate(xTrans, yTrans, zTrans);
+    
+  translate(width/2 + xTrans, height/2 + yTrans, zTrans);
   
   rotateX(radians(rotateXangle));
+  rotateY(radians(rotateYangle));
   rotateZ(radians(rotateZangle));
   
+  translate(-width/2, -height/2, 0);
   drawVectors(ySpace);
   
   popMatrix();
@@ -139,11 +145,15 @@ void drawVectors(int _ySpace){
     oldDepthValue = 0;
     oldBufferValue = 0;
     
-    //--- display the same line ----//
-    //FloatList actualBufferValues = buffers.get(buffers.size()-1);
+    FloatList actualBufferValues;
     
-    //or display different lines ---//
-    FloatList actualBufferValues = buffers.get(lineNumber);
+    if(multipleBuffers){
+      //display different lines
+      actualBufferValues = buffers.get(lineNumber);
+    } else {
+      //display the same line
+      actualBufferValues = buffers.get(buffers.size()-1); 
+    }
     
     if(actualBufferValues.size() > 0) { 
       editPointsPosition(oldVector, oldBufferValue, i, actualBufferValues, oldDepthValue);
@@ -165,37 +175,30 @@ void editPointsPosition(PVector oldVector, float oldBufferValue, int i, FloatLis
     //point(actualVector.x, actualVector.y, actualVector.z);
     
     if(oldVector != null){
-      
-      float alpha = map(i, 0, height, 0, 255);
-      
+            
       if(depthValue >= lowestValue && depthValue <= highestValue){
-        stroke(255, alpha);
-        
-        depthValue = map(depthValue, lowestValue, highestValue, -1, 1);
-        
-        line(oldVector.x, oldVector.y, oldVector.z - oldDepthValue*depth - oldBufferValue*amplitude,
-        actualVector.x, actualVector.y, actualVector.z - depthValue*depth - actualBufferValue*amplitude);
-        
+        stroke(255);
+
       } else {
-          
+        
+        stroke(75); 
+        
         if(depthValue < lowestValue) {
           //depthValue = lowestValue;
           depthValue = highestValue;
         } else if(depthValue > highestValue){
           depthValue = highestValue;
         }
-        
-        depthValue = map(depthValue, lowestValue, highestValue, -1, 1);
-        
-        stroke(75, alpha);
-        
-        if(linesVisibility) line(oldVector.x, oldVector.y, oldVector.z - oldDepthValue*depth - oldBufferValue*amplitude,
-        actualVector.x, actualVector.y, actualVector.z - depthValue*depth - actualBufferValue*amplitude);
-      
+
       }
       
-      //line(oldVector.x, oldVector.y, oldVector.z - oldDepthValue/depth - oldBufferValue*amplitude,
-      //actualVector.x, actualVector.y, actualVector.z - depthValue/depth - actualBufferValue*amplitude);
+      float weight = map(depthValue, lowestValue, highestValue, 4, 1);
+      depthValue = map(depthValue, lowestValue, highestValue, -1, 1);
+      
+      strokeWeight(weight);
+        
+      if(linesVisibility) line(oldVector.x, oldVector.y, oldVector.z - oldDepthValue*depth - oldBufferValue*amplitude,
+      actualVector.x, actualVector.y, actualVector.z - depthValue*depth - actualBufferValue*amplitude);
       
     }
     
@@ -205,9 +208,6 @@ void editPointsPosition(PVector oldVector, float oldBufferValue, int i, FloatLis
     
   }
   
-}
-void mouseReleased(){
-  menu.resetSliders();
 }
 void setSelectedValue(int value) {    
   if(switchValue){
@@ -220,9 +220,15 @@ void setSelectedValue(int value) {
     PApplet.println("highestValue: " + highestValue);
   }
 }
+//------------- keyboard ------------------//
+void mouseReleased(){
+  menu.resetSliders();
+}
 void keyPressed() {
   if (key == 'v') {
     linesVisibility = !linesVisibility;
+  } else if (key == 'b') {
+    multipleBuffers = !multipleBuffers;
   } else if (key == 'l') {
     switchValue = !switchValue;
   } else if (keyCode == UP) {

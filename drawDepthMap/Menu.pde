@@ -21,6 +21,10 @@ class Menu {
     sliders.get(sliders.size()-1).initValue(45);
     rotateXangle = 45;
     
+    sliders.add(new Slider(new PVector(location.x, location.y + 15*sliders.size()), "rotateY", 0, 360, colors[1]));
+    sliders.get(sliders.size()-1).initValue(0);
+    rotateYangle = 0;
+    
     sliders.add(new Slider(new PVector(location.x, location.y + 15*sliders.size()), "rotateZ", 0, 360, colors[2]));
     sliders.get(sliders.size()-1).initValue(0);
     rotateZangle = 0;
