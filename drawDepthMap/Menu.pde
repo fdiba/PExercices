@@ -38,13 +38,13 @@ class Menu {
     ySpace = 10;
     
     sliders.add(new Slider(new PVector(location.x, location.y + 15*sliders.size()), "depth", -200, 200, colors[6]));
-    sliders.get(sliders.size()-1).initValue(20);
-    depth = 20;
+    sliders.get(sliders.size()-1).initValue(60);
+    depth = 60;
 
     sliders.add(new Slider(new PVector(location.x, location.y + 15*sliders.size()), "maxDist", 1, 250, colors[7]));
-    sliders.get(sliders.size()-1).initValue(10);
-    maxDist = 10;
- 
+    sliders.get(sliders.size()-1).initValue(45);
+    maxDist = 45;
+    
   }
   protected void update(){
     
@@ -59,7 +59,26 @@ class Menu {
   void resetSliders(){
     for (Slider s: sliders) s.reset();
   }
+  void drawBorders(float mx, float my, float mwidth, float mheight){
+    
+    noFill();
+    rectMode(CORNER);
+    strokeWeight(1);
+    stroke(colors[4], 127);
+    rect(mx, my, mwidth, mheight);
+    
+  }
   void display(){
-    for (Slider s: sliders) s.display();
+
+    float mx, my, mwidth, mheight;
+    mx = location.x-10;
+    my = location.y-10;
+    mwidth = 120;
+    mheight = location.y + 15*sliders.size() - 35;
+
+    if(mouseX > mx && mouseX < mx+mwidth && mouseY > my && mouseY < my + mheight) {
+      drawBorders(mx, my, mwidth, mheight);
+      for (Slider s: sliders) s.display();
+    }
   }
 }

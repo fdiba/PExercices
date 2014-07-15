@@ -61,7 +61,6 @@ void setup(){
   
   menu = new Menu(new PVector(450, 50));
   
-  //ySpace = 10;
   buffers = new ArrayList<FloatList>();
   lineNumber = 0;
   

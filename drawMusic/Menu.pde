@@ -52,6 +52,26 @@ class Menu {
     for (Slider s: sliders) s.reset();
   }
   void display(){
-    for (Slider s: sliders) s.display();
+    
+    float mx, my, mwidth, mheight;
+    mx = location.x-10;
+    my = location.y-10;
+    mwidth = 120;
+    mheight = location.y + 15*sliders.size() - 35;
+
+    if(mouseX > mx && mouseX < mx+mwidth && mouseY > my && mouseY < my + mheight) {
+      drawBorders(mx, my, mwidth, mheight);
+      for (Slider s: sliders) s.display();
+    }
+    
+  }
+  void drawBorders(float mx, float my, float mwidth, float mheight){
+    
+    noFill();
+    rectMode(CORNER);
+    strokeWeight(1);
+    stroke(colors[4], 127);
+    rect(mx, my, mwidth, mheight);
+    
   }
 }
