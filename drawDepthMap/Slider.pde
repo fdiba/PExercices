@@ -79,6 +79,8 @@ class Slider {
       rotateZangle = value;
     } else if (param.equals("ySpace")){
       ySpace = (int) value;
+    } else if (param.equals("maxDist")){
+      maxDist = (int) value;
     }
    
     println(param + ": " + value);

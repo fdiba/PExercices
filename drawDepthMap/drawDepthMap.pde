@@ -38,7 +38,7 @@ float rotateYangle;
 float rotateZangle;
 int amplitude;
 int depth;
-
+int maxDist;
 
 void setup(){
   
@@ -180,8 +180,11 @@ void editPointsPosition(PVector oldVector, float oldBufferValue, int i, FloatLis
         
         depthValue = setColorWeightDepthValue(depthValue, color(255));
         
-        line(oldVector.x, oldVector.y, oldVector.z - oldDepthValue*depth - oldBufferValue*amplitude,
-             actualVector.x, actualVector.y, actualVector.z - depthValue*depth - actualBufferValue*amplitude);
+        float ovz = oldVector.z - oldDepthValue*depth - oldBufferValue*amplitude;
+        float avz = actualVector.z - depthValue*depth - actualBufferValue*amplitude;
+        
+        float distance = abs(ovz-avz); 
+        if(distance < maxDist)line(oldVector.x, oldVector.y, ovz, actualVector.x, actualVector.y, avz);
 
       } else {
                 
@@ -194,8 +197,11 @@ void editPointsPosition(PVector oldVector, float oldBufferValue, int i, FloatLis
 
         depthValue = setColorWeightDepthValue(depthValue, color(75));
         
-        if(linesVisibility) line(oldVector.x, oldVector.y, oldVector.z - oldDepthValue*depth - oldBufferValue*amplitude,
-                                 actualVector.x, actualVector.y, actualVector.z - depthValue*depth - actualBufferValue*amplitude);
+        float ovz = oldVector.z - oldDepthValue*depth - oldBufferValue*amplitude;
+        float avz = actualVector.z - depthValue*depth - actualBufferValue*amplitude;
+        
+        float distance = abs(ovz-avz); 
+        if(distance < maxDist && linesVisibility)line(oldVector.x, oldVector.y, ovz, actualVector.x, actualVector.y, avz);
              
       }
       
