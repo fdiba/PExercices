@@ -2,8 +2,8 @@ class HostImage {
 
   PImage img;
   PVector location;
-  int width;
-  int height;
+  int _width;
+  int _height;
   PApplet parent;
   float contrast;
   float brightness;
@@ -16,6 +16,8 @@ class HostImage {
     location = new PVector();
 
     img = loadImage(str);
+      
+    
     init();
   }
   void resize(int _width, int _height) {
@@ -23,10 +25,11 @@ class HostImage {
     init();
   }
   void init() {
-    width = img.width;
-    height = img.height;
-    location.y = (parent.height - height)/2;
-    location.x = (parent.width - width)/2;
+    _width = img.width;
+    _height = img.height; 
+    location.y = (parent.height - _height)/2;
+    location.x = (parent.width - _width)/2;
+    
   }
   void setPix(){
     pix = new boolean[pixels.length];

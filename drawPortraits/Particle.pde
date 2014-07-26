@@ -13,7 +13,7 @@ class Particle {
   int distMin;
   float spanUp;
   float spanDown;
-  int treshold;
+  int threshold;
 
   Particle() {
     location = plocation = new PVector(random(width), random(height));
@@ -26,12 +26,20 @@ class Particle {
     init();
   }
   void init(){
-    treshold = 127;
-    spanUp = 0;
+    
+    threshold = 127;
+    
+    spanUp = 1;
     spanDown = 1;
+    
     distMin = 10;
+
+    
+    //TODO add param !!!!
     minValue = -30;
     maxValue = 30;
+
+    
     destination = location.get();
     PVector rd = new PVector(random(minValue, maxValue), random(minValue, maxValue));
     destination.add(rd);
@@ -71,7 +79,8 @@ class Particle {
 
   }
   void getColorAndActUponIt() {
-    int loc = (int)location.x + (int)location.y * host.img.width;
+    
+    int loc = (int)location.x + (int)location.y * width;
  
     if(loc < host.img.pixels.length-1){
  
@@ -80,19 +89,27 @@ class Particle {
       if(!host.pix[loc]) {
         
         host.pix[loc] = true;
-        float r = red(couleur);
-        spanUp = r/255;
         
-        if(r > treshold){ 
-          //lifespan += spanUp*2;
+        //float blue = blue(couleur);
+        int blue = couleur & 0xFF;
+
+        
+        if(blue > threshold){ 
+          
           lifespan += spanUp;
+
         }  else {
-          lifespan -= spanUp;
+          
+          lifespan -= spanDown;
+        
         }
 
       } else {
+        
         lifespan -= spanDown;
+        
       }
+    
     } else {
       println(loc + " " + pixels.length + " " + host.img.pixels.length);  
       lifespan = 0; 
@@ -100,25 +117,29 @@ class Particle {
         
   }
   boolean isDead() {
+     
     if(lifespan <= 0.0) {
-        return true;
-      } else {
-        return false;
-      }
+      return true;
+    } else {
+      return false;
+    }
+    
   }
   void display() {
-    stroke(couleur);
-    if(init){
-      if(couleur > 0xff00ff00) point(location.x, location.y);
-      //if(couleur > 0xff000000) line(plocation.x, plocation.y, location.x, location.y);
-    } else {
-      if(couleur > 0xff00ff00) point(location.x, location.y);
-      init = true;
-    }
+    
+    
+    
+    if(!init) init=true;
+    
+    stroke(couleur);    
+    point(location.x, location.y);
+    
     plocation = location.get();
-    //displayDestination();
+    
+    //displayDestinationPoint();
+    
   }
-  void displayDestination(){
+  void displayDestinationPoint(){
     stroke(255,0,0);
     point(destination.x, destination.y);
   }
