@@ -2,22 +2,22 @@ class Particle {
   
   PVector location;
   PVector plocation;
-  PVector destination;
   PVector velocity;
+  PVector acceleration;
   
   //color c;
   int blueValue;
-  int delay;
   
   //----- param ----//
-  int lifespan = 70;
+  int lifespan = 25;
   int maxValue = 60;
   int minValue = -60;
   int maxSpeed = 1;
   float distMin = 10f;
   int step = 5;
   int threshold = 127;
-  int maxDelay = 25;
+  int maxDelay = 5;
+  float maxforce = 0.05;    //maximum steering force
   
   Particle() {
     
@@ -36,44 +36,177 @@ class Particle {
   }
   void init(){
     blueValue = 127;
-    velocity = new PVector();
-    setDestination();
-    setDelay();
+    velocity = new PVector(0,0);
+    //velocity = new PVector(random(minValue, maxValue), random(minValue, maxValue));
+    acceleration = new PVector(0,0);
   }
-  void setDelay(){
-    delay = (int) random(maxDelay);
+  void applyForce(PVector force) {
+    acceleration.add(force);
   }
-  void setDestination(){
-    destination = location.get();
-    destination.add(new PVector(random(minValue, maxValue), random(minValue, maxValue)));
+  void flock(ArrayList<Particle> particles){
+    
+    PVector sep = separate(particles);
+    //PVector ali = align(particles);
+    //PVector coh = cohesion(particles);
+    
+    //-------- TODO PARAM -----------//
+    sep.mult(1.5);
+    //ali.mult(1.0);
+    //coh.mult(1.0);
+    
+    applyForce(sep);
+    //applyForce(ali);
+    //applyForce(coh);
+    
+  }
+  PVector separate (ArrayList<Particle> particles) {
+    
+    float desiredseparation = 25.0f; //--------- PARAM --------------//
+    PVector steer = new PVector(0,0);
+    int count = 0;
+    
+    for (Particle other : particles) {
+      
+      float distance = PVector.dist(location, other.location);
+      
+      if ((distance > 0) && (distance < desiredseparation)) {
+        
+        PVector diff = PVector.sub(location, other.location);
+        diff.normalize();
+        diff.div(distance);
+        steer.add(diff);
+        count++;
+            
+      }
+    }
+    
+    if (count > 0) steer.div((float)count);
+    
+    if (steer.mag() > 0) {
+      
+      //implement Reynolds: Steering = Desired - Velocity
+      steer.normalize();
+      steer.mult(maxSpeed);
+      steer.sub(velocity);
+      steer.limit(maxforce);
+      
+    }
+    
+    return steer;
+    
+  }
+  PVector align (ArrayList<Particle> particles) {
+      
+    float neighbordist = 50;
+    PVector sum = new PVector(0,0);
+    int count = 0;
+    
+    for (Particle other : particles) {
+      
+      float distance = PVector.dist(location, other.location);
+      
+      if ((distance > 0) && (distance < neighbordist)) {
+        sum.add(other.velocity);
+        count++;
+      }
+      
+    }
+    
+    if (count > 0) {
+      
+      sum.div((float)count);
+      sum.normalize();
+      sum.mult(maxSpeed);
+      
+      PVector steer = PVector.sub(sum,velocity);
+      steer.limit(maxforce);
+      return steer;
+      
+    } else {
+      
+      return new PVector(0,0);
+    
+    }
+    
+  }
+  PVector cohesion (ArrayList<Particle> particles) {
+    
+    float neighbordist = 50;
+    PVector sum = new PVector(0,0);
+    int count = 0;
+    
+    for (Particle other : particles) {
+      
+      float distance = PVector.dist(location, other.location);
+      
+      if ((distance > 0) && (distance < neighbordist)) {
+        sum.add(other.location);
+        count++;
+      }
+    }
+    
+    if (count > 0) {
+      
+      sum.div(count);
+      return seek(sum);
+    
+    } else {
+      return new PVector(0,0);
+    }
+    
+  }
+  PVector seek(PVector target) {
+    
+    PVector desired = PVector.sub(target, location);
+    
+    desired.normalize();
+    desired.mult(maxSpeed);
+    
+    /* a method that calculates and applies a steering force towards a target
+     * steering = Desired minus Velocity
+     */
+     
+    PVector steer = PVector.sub(desired,velocity);
+    steer.limit(maxforce);
+    return steer;
+    
+  }
+    
+  void run(ArrayList<Particle> particles){
+    flock(particles);
+    update();
   }
   void update(){
     
-    PVector acceleration = PVector.sub(destination, location);
-    acceleration.normalize();
-    acceleration.mult(.1);
+    //PVector acceleration = PVector.sub(destination, location);
+    //acceleration.normalize();
+    //acceleration.mult(.1);
+    
     velocity.add(acceleration);
+    
     velocity.limit(maxSpeed);
+    
     location.add(velocity);
     
-    editDelay();
+    acceleration.mult(0);
     
+    //------------------
+        
     setBoundaries();
     
     setParticleColorBasedOnHostImage();
     
-    checkDistanceFromDestination();
-    
-  }
-  void editDelay(){
-    
-    delay--;
-    if(delay<0)delay=0;
     
   }
   void setParticleColorBasedOnHostImage(){
     
-    int loc = (int)location.x + (int)location.y * width;
+    int y = (int)location.y;
+    int x = (int)location.x;
+    
+    if (y >= height) y = height-1;
+    if (x >= width) x = width-1;
+    
+    int loc = x + y * width;
     
     if(loc < width*height){
       
@@ -132,28 +265,18 @@ class Particle {
     lifespan = constrain(lifespan, 0, 100);
  
   }
-  void checkDistanceFromDestination(){
-    
-    float distance = dist(location.x, location.y, destination.x, destination.y);
-    
-    if(distance <= distMin) {
-      PVector rd = new PVector(random(minValue, maxValue), random(minValue, maxValue));
-      destination.add(rd);
-    }
-    
-  }
   void setBoundaries(){
       
     if(location.x > width) {
-      location.x = width;
-    } else if (location.x < 0){
       location.x = 0;
+    } else if (location.x < 0){
+      location.x = width;
     }
     
     if(location.y > height) {
-      location.y = height;
-    } else if (location.y < 0){
       location.y = 0;
+    } else if (location.y < 0){
+      location.y = height;
     }
     
   }

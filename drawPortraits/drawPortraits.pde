@@ -35,7 +35,9 @@ void draw(){
     loadPixels();
     ps.run();
     updatePixels();
+    
     println(ps.particles.size());
+  
   }
   
 }
