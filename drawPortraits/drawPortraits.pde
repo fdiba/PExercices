@@ -1,52 +1,51 @@
 import java.util.Date;
 
 HostImage host;
-boolean hasBeenSet;
 ParticleSystem ps;
+
+boolean hasBeenSet;
+
+String[] imageFiles = {"emma-watson-158356_w1000.jpg", "Scarlett-Johansson-faces.jpg"};
 
 void setup(){
   
-  size(640,480);
+  size(640, 480);
   frameRate(25);
   background(0);
   smooth();
   
-  host = new HostImage(this, "Scarlett-Johansson-faces.jpg");
+  int id = int(random(imageFiles.length));
+  //host = new HostImage(this, imageFiles[id]);
+  host = new HostImage(this, imageFiles[1]);
+  host.removeColors();
+  
   ps = new ParticleSystem();
   
-  if(host._width > width && host._width > host._height){
-    int scale = host._width/width;
-    host.resize(host._width/scale, host._height/scale); 
-  }
 }
-
 void draw(){
   
   if(!hasBeenSet) {
-    
-    image(host.img, host.location.x, host.location.y);
-    loadPixels();
-      host.withdrawColors();
-    updatePixels();
-  
+    fill(0);
+    rect(0,0,width, height);
+    host.editLuminosity();
+    host.display();  
   } else {
-    
-    ps.run();
   
+    //image(host.img, 0, 0);
+    loadPixels();
+    ps.run();
+    updatePixels();
+    println(ps.particles.size());
   }
+  
 }
 void startAnim(){
-  println("contrast: " + host.contrast + " | brightness: " + host.brightness);
+  //println("contrast: " + host.contrast + " | brightness: " + host.brightness);
   hasBeenSet = true;
-  host.img = get(0, 0, width, height); 
   
-  /*host.width = width;
-  host.height = height;*/
-  
-  host.init();
-  background(0);
-  host.setPix();
-  //noCursor();
+  host.img = get(0, 0, width, height); //update img width and height contrast and brightness
+  host.img.loadPixels();
+  background(0); 
 }
 void savePicture(){
   Date date = new Date();
@@ -55,16 +54,11 @@ void savePicture(){
   save(name);
 }
 //------------ mouse ------------//
-void keyPressed(){
-  if (key == ENTER && !hasBeenSet){
-    startAnim();
-  } else if (key == ENTER && hasBeenSet){
-    savePicture();
-  }
-}
 void mouseMoved(){
-  host.contrast = 5f*(mouseX/(float)width); //0 to 5;
-  host.brightness = 256*(mouseY/(float)height-0.5); //-128 to +128  
+  if(!hasBeenSet){
+    host.contrast = 5f*(mouseX/(float)width); //0 to 5
+    host.brightness = 256*(mouseY/(float)height-0.5); //-128 to +128
+  }
 }
 void mousePressed(){
   if (!hasBeenSet){
