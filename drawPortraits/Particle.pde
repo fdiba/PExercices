@@ -6,7 +6,7 @@ class Particle {
   PVector acceleration;
   
   int blueValue;
-  int delay;
+  //int delay;
   int lifespan;
   
   //----- param ----//
@@ -175,10 +175,10 @@ class Particle {
     flock(particles);
     update();
   }
-  void editDelay(){
+  /*void editDelay(){
     delay--;
     if(delay<0)delay=0;
-  }
+  }*/
   void update(){
     
     //PVector acceleration = PVector.sub(destination, location);
@@ -199,7 +199,7 @@ class Particle {
     
     setParticleColorBasedOnHostImage();
     
-    editDelay();
+    //editDelay();
     
   }
   void setParticleColorBasedOnHostImage(){
