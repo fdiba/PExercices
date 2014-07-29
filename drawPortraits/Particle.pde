@@ -5,41 +5,40 @@ class Particle {
   PVector velocity;
   PVector acceleration;
   
-  //color c;
   int blueValue;
+  int delay;
+  int lifespan;
   
   //----- param ----//
-  int lifespan = 25;
+  int startLifespan = 50;
   int maxValue = 60;
   int minValue = -60;
   int maxSpeed = 1;
   float distMin = 10f;
   int step = 5;
-  int threshold = 127;
-  int maxDelay = 5;
+  int threshold = 0; //high importance
   float maxforce = 0.05;    //maximum steering force
+  //int maxDelay = 25*2;
   
   Particle() {
-    
-    location = plocation = new PVector(random(width), random(height));
-    
+    location = plocation = new PVector(random(width), random(height)); 
     init();
-    
   }
   Particle(PVector loc, int _lifespan) {
-    
     location = plocation = loc.get();
     lifespan = _lifespan;
-    
     init();
-    
   }
   void init(){
     blueValue = 127;
-    velocity = new PVector(0,0);
-    //velocity = new PVector(random(minValue, maxValue), random(minValue, maxValue));
+    //velocity = new PVector(0,0);
+    velocity = new PVector(random(minValue, maxValue), random(minValue, maxValue));
     acceleration = new PVector(0,0);
+    //setDelay();
   }
+  /*void setDelay(){
+    delay = int(random(maxDelay))+25;
+  }*/
   void applyForce(PVector force) {
     acceleration.add(force);
   }
@@ -176,6 +175,10 @@ class Particle {
     flock(particles);
     update();
   }
+  void editDelay(){
+    delay--;
+    if(delay<0)delay=0;
+  }
   void update(){
     
     //PVector acceleration = PVector.sub(destination, location);
@@ -196,6 +199,7 @@ class Particle {
     
     setParticleColorBasedOnHostImage();
     
+    editDelay();
     
   }
   void setParticleColorBasedOnHostImage(){

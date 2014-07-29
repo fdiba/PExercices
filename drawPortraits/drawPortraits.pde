@@ -55,6 +55,15 @@ void savePicture(){
   String name = "data/images/portraits-"+date.getTime()+".png";
   save(name);
 }
+//------------ keyboard ------------//
+void keyPressed(){
+  if (key == ENTER && !hasBeenSet){
+    noCursor();
+    startAnim();
+  } else if (key == ENTER && hasBeenSet){
+    savePicture();
+  }
+}
 //------------ mouse ------------//
 void mouseMoved(){
   if(!hasBeenSet){

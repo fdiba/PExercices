@@ -5,7 +5,7 @@ class ParticleSystem{
   ArrayList<Particle> particles;
   
   //---- param ----//
-  int particlesMaxNumber = 70;
+  int particlesMaxNumber = 20;
   int lifespanToGiveBirth = 80;
   
   ParticleSystem(){
@@ -36,14 +36,11 @@ class ParticleSystem{
         int count = 0;
     
         for (Particle other : particles) {
-      
           float distance = PVector.dist(p.location, other.location);
-      
           if ((distance > 0) && (distance < 50)) count++;
-       
         }
         
-        int maxClosePoints = int(random(5)+5);
+        int maxClosePoints = int(random(5)+10);
         
         if(count < maxClosePoints){
           
@@ -51,7 +48,15 @@ class ParticleSystem{
           PVector randLoc = new PVector(random(-1,1), random(-1,1));
           PVector newLoc = PVector.add(p.location, randLoc);
           
-          if(particles.size() < 500) particles.add(new Particle(newLoc, 10));
+          //if(particles.size() < 500 && p.delay <=0) {
+          if(particles.size() < 700) {
+            
+            particles.add(new Particle(newLoc, p.startLifespan/2));
+            
+            //p.setDelay();
+            p.lifespan = p.startLifespan/2;
+          
+          }
         
         }
     
