@@ -1,3 +1,4 @@
+import javax.sound.midi.MidiMessage; 
 import themidibus.*;
 MidiBus myBus;
 
@@ -23,6 +24,8 @@ void draw() {
   
   background(0);
 
+  translate(0, 15);
+  
   displayEncoders();
   
   translate(150, 140);
@@ -66,8 +69,7 @@ void displayEncoders(){
 void displayColorDots(){
   
   noStroke();
-  
-  
+
   for(int i=0; i<lights.length; i++){
     
     int h = height/5/encoders.length;
@@ -86,6 +88,29 @@ void displayColorDots(){
 
   }
   
+}
+void mousePressed(){
+  println("sending...");
+  
+  /*
+  
+  //edit encoders position
+  
+  int status = 191; //channel
+  int data1 = 1; //note
+  int data2 = 0; //value
+  
+  myBus.sendMessage(status, data1, data2);*/
+  
+  int status = 185; //channel
+  int data1 = 6; //note
+  int data2 = 0; //value
+  
+  //edit sliders position
+  myBus.sendMessage(185, 99, 0);
+  myBus.sendMessage(185, 98, 0);
+  myBus.sendMessage(185, 6, 50); //big one
+  myBus.sendMessage(185, 38, 0);//small one ?
 }
 void displayGreyAreas(){
   
@@ -120,27 +145,36 @@ void controllerChange(int channel, int number, int value) {
     int lightNumber = (int) map(value, 0, 127, 0, 15);
     lights[number] = lightNumber;
     
-    println(value);
+    //println(value);
     
   } else if(channel==9){
   
-    println("Channel: "+channel+" Number: "+number+" Value: "+value);
-    
-    
-    
+    //println("Channel: "+channel+" Number: "+number+" Value: "+value);
+
     if(number==98) sliderId = value;
     
     if(number==6) {
       sliders[sliderId] = value;
     }
-    
-    
-    
+
   } else {
     
-    println("Channel: "+channel+" Number: "+number+" Value: "+value);
+    //println("Channel: "+channel+" Number: "+number+" Value: "+value);
     
   }
+  
+  //println("Channel: "+channel+" Number: "+number+" Value: "+value);
+}
+
+void midiMessage(MidiMessage message, long timestamp, String bus_name) {
+   int note = (int)(message.getMessage()[1] & 0xFF) ;
+   int vel = (int)(message.getMessage()[2] & 0xFF);
+   
+   //int channel = (int)(message.getMessage()[0] & 0xFF) +1;
+   int channel = (int)(message.getMessage()[0] & 0xFF);
+   
+   println("Bus " + bus_name + ": Channel " + channel + ", note " + note + ", vel " + vel);
+   //invokeNoteHandler(note, vel);
 }
 void createRamp(){
   
@@ -172,5 +206,5 @@ void createRamp(){
     }
     
   }
-  println(ramp.size());
+  //println(ramp.size());
 }
