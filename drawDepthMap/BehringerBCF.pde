@@ -3,6 +3,10 @@ class BehringerBCF{
   MidiBus midiBus;
   int slidersList;
   
+  //last slider values
+  int chan185num98Value; //number 0 to 7
+  int chan185num6Value; //value 0 to 127
+  
   BehringerBCF(MidiBus _midiBus){
   
     midiBus = _midiBus;
@@ -26,14 +30,35 @@ class BehringerBCF{
     if(channel == 154 && number != slidersList){
       
       slidersList = number;
-      println("reset behrlinger sliders");
       
       menu.resetBSliders();
+     
+    } else if(channel == 185){
       
+      menu.reveal();
+      
+      if(number==98) chan185num98Value = value;
+      if(number==6) chan185num6Value = value;
+      
+      int id=999;
+      
+      if(slidersList == 0){ //first sliders grp
+      
+        id = chan185num98Value;
+        
+        //if(id>2)return;
+        
+      } else if (slidersList == 1){ //second sliders grp
+      
+        id = chan185num98Value + 3;
+        
+      }
+      
+      //id<7 because slider 8 do not exist
+      if(number==38 && id<7+3) menu.sliders.get(id).editValWithBeh(chan185num6Value);
       
       
     }
-    
     
   }
   

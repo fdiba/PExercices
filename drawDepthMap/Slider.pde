@@ -61,13 +61,14 @@ class Slider {
     }
     
   }
-  void behReset(){
+  void editBehSliderPos(){
     
     int behValue = (int) map(sliderCtrl.location.x, lowXPos, maxYPos, 0, 127);
     behringer.setSliderPosition(bGrp, bId, behValue);
     
   }
   void followMouse(){
+    
     if(dragging) {
       sliderCtrl.location.x = mouseX;
       if(sliderCtrl.location.x <= lowXPos) {
@@ -76,12 +77,21 @@ class Slider {
         sliderCtrl.location.x = maxYPos;
       }
       editValue();
+      
+      //do it better and elsewhere
+      //editBehSliderPos();
     }
+    
+  }
+  void editValWithBeh(int value){
+    float xPos = map(value, 0, 127, lowXPos, maxYPos);
+    sliderCtrl.location.x = xPos;
+    editValue();
   }
   void editValue(){
     
     float value = map(sliderCtrl.location.x, lowXPos, maxYPos, lowValue, maxValue);
-   
+    
     if (param.equals("depth")) {
       depth = (int) value;
     } else if (param.equals("amplitude")){
@@ -103,7 +113,7 @@ class Slider {
     } else if (param.equals("maxDist")){
       maxDist = (int) value;
     }
-   
+    
     //println(param + ": " + value);
     
   }

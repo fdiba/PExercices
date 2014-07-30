@@ -288,7 +288,7 @@ void midiMessage(MidiMessage message, long timestamp, String bus_name) {
    int number = message.getMessage()[1] & 0xFF;
    int value = message.getMessage()[2] & 0xFF;
    
-   //println("bus " + bus_name + " | channel " + channel + " | num " + number + " | val " + value);
+   println("bus " + bus_name + " | channel " + channel + " | num " + number + " | val " + value);
    
    if(BCF2000)behringer.midiMessage(channel, number, value);
    

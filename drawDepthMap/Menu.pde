@@ -2,6 +2,7 @@ class Menu {
   PVector location;
   ArrayList<Slider> sliders;
   int[] colors = {-8410437,-9998215,-1849945,-5517090,-4250587,-14178341,-5804972,-3498634};
+  int showTime;
   
   Menu(PVector _location) {
     
@@ -14,16 +15,10 @@ class Menu {
     sliders.add(new Slider(location, "xTrans", -2000, 2000, colors[0]));
     if(BCF2000) sliders.get(sliders.size()-1).setbehSlider(0, 0);
     
-    sliders.get(sliders.size()-1).initValue(0);
-    xTrans = 0;
-    
     //---
     
     sliders.add(new Slider(new PVector(location.x, location.y + 15*sliders.size()), "yTrans", -2000, 2000, colors[1]));
     if(BCF2000) sliders.get(sliders.size()-1).setbehSlider(0, 1);
-    
-    sliders.get(sliders.size()-1).initValue(0);
-    yTrans = 0;
     
     //---
     
@@ -92,6 +87,8 @@ class Menu {
   }
   protected void update(){
     
+    if(showTime>0)showTime--;
+    
     if(mousePressed){
       PVector mousePosition = new PVector(mouseX, mouseY);
       for (Slider s: sliders) s.update(mousePosition);
@@ -101,7 +98,7 @@ class Menu {
     
   }
   void resetBSliders(){
-    for (Slider s: sliders) s.behReset();
+    for (Slider s: sliders) s.editBehSliderPos();
   }
   void resetSliders(){
     for (Slider s: sliders) s.reset();
@@ -115,6 +112,11 @@ class Menu {
     rect(mx, my, mwidth, mheight);
     
   }
+  void reveal(){
+    
+    showTime = 24*2;
+    
+  }
   void display(){
 
     float mx, my, mwidth, mheight;
@@ -123,7 +125,7 @@ class Menu {
     mwidth = 120;
     mheight = location.y + 15*sliders.size() - 35;
 
-    if(mouseX > mx && mouseX < mx+mwidth && mouseY > my && mouseY < my + mheight) {
+    if(mouseX > mx && mouseX < mx+mwidth && mouseY > my && mouseY < my + mheight || showTime>0) {
       drawBorders(mx, my, mwidth, mheight);
       for (Slider s: sliders) s.display();
     }
