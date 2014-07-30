@@ -9,39 +9,83 @@ class Menu {
         
     sliders = new ArrayList<Slider>();
     
+    //--- first behringer group -------------------//
+    
     sliders.add(new Slider(location, "xTrans", -2000, 2000, colors[0]));
+    if(BCF2000) sliders.get(sliders.size()-1).setbehSlider(0, 0);
+    
+    sliders.get(sliders.size()-1).initValue(0);
+    xTrans = 0;
+    
+    //---
     
     sliders.add(new Slider(new PVector(location.x, location.y + 15*sliders.size()), "yTrans", -2000, 2000, colors[1]));
+    if(BCF2000) sliders.get(sliders.size()-1).setbehSlider(0, 1);
+    
+    sliders.get(sliders.size()-1).initValue(0);
+    yTrans = 0;
+    
+    //---
     
     sliders.add(new Slider(new PVector(location.x, location.y + 15*sliders.size()), "zTrans", -2500, 2500, colors[2]));
+    if(BCF2000) sliders.get(sliders.size()-1).setbehSlider(0, 2);
+    
     sliders.get(sliders.size()-1).initValue(-200);
     zTrans = -200;
     
+    //--- second behringer group -------------------//
+    
     sliders.add(new Slider(new PVector(location.x, location.y + 15*sliders.size()), "rotateX", 0, 360, colors[0]));
+    if(BCF2000) sliders.get(sliders.size()-1).setbehSlider(1, 0);
+    
     sliders.get(sliders.size()-1).initValue(45);
     rotateXangle = 45;
     
+    //---
+    
     sliders.add(new Slider(new PVector(location.x, location.y + 15*sliders.size()), "rotateY", 0, 360, colors[1]));
+    if(BCF2000) sliders.get(sliders.size()-1).setbehSlider(1, 1);
+    
     sliders.get(sliders.size()-1).initValue(0);
     rotateYangle = 0;
     
+    //---
+    
     sliders.add(new Slider(new PVector(location.x, location.y + 15*sliders.size()), "rotateZ", 0, 360, colors[2]));
+    if(BCF2000) sliders.get(sliders.size()-1).setbehSlider(1, 2);
+    
     sliders.get(sliders.size()-1).initValue(0);
     rotateZangle = 0;
     
+    //---
+    
     sliders.add(new Slider(new PVector(location.x, location.y + 15*sliders.size()), "amplitude", 1, 200, colors[4]));
+    if(BCF2000) sliders.get(sliders.size()-1).setbehSlider(1, 3);
+    
     sliders.get(sliders.size()-1).initValue(25);
     amplitude = 25;
     
+    //---
+    
     sliders.add(new Slider(new PVector(location.x, location.y + 15*sliders.size()), "ySpace", 10, 150, colors[5]));
+    if(BCF2000) sliders.get(sliders.size()-1).setbehSlider(1, 4);
+    
     sliders.get(sliders.size()-1).initValue(10);
     ySpace = 10;
     
+    //---
+    
     sliders.add(new Slider(new PVector(location.x, location.y + 15*sliders.size()), "depth", -200, 200, colors[6]));
+    if(BCF2000) sliders.get(sliders.size()-1).setbehSlider(1, 5);
+    
     sliders.get(sliders.size()-1).initValue(60);
     depth = 60;
+    
+    //---
 
     sliders.add(new Slider(new PVector(location.x, location.y + 15*sliders.size()), "maxDist", 1, 250, colors[7]));
+    if(BCF2000) sliders.get(sliders.size()-1).setbehSlider(1, 6);
+    
     sliders.get(sliders.size()-1).initValue(45);
     maxDist = 45;
     
@@ -55,6 +99,9 @@ class Menu {
     
     for (Slider s: sliders) s.followMouse();
     
+  }
+  void resetBSliders(){
+    for (Slider s: sliders) s.behReset();
   }
   void resetSliders(){
     for (Slider s: sliders) s.reset();

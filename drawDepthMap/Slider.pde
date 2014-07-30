@@ -4,13 +4,20 @@ class Slider {
   SliderController sliderCtrl;
   int width;
   boolean dragging;
+  
   float maxValue;
   float lowValue;
-  float value;
+  
   float lowXPos;
   float maxYPos;
   String param;
   int couleur;
+  
+  //--- behringer ---//
+  int bGrp;
+  int bId;
+  
+  //-----------------//
   
   Slider(PVector _location, String _param, float _lowValue, float _maxValue, int _color) {
     location = _location;
@@ -26,27 +33,41 @@ class Slider {
     
     couleur = _color;
   }
-  protected void update(PVector mousePosition){
+  void setbehSlider(int _bGrp, int _bId){
+    bGrp = _bGrp;
+    bId = _bId;
+  }
+  void update(PVector mousePosition){
     
     if(mousePosition.x > sliderCtrl.location.x - sliderCtrl.width/2 && mousePosition.x < sliderCtrl.location.x + sliderCtrl.width/2 &&
        mousePosition.y > sliderCtrl.location.y - sliderCtrl.width/2 && mousePosition.y <sliderCtrl. location.y + sliderCtrl.width/2){
       
-      //PApplet.println("hit");
       dragging = true;
-      //sliderCtrl.location.x = mousePosition.x;
+      
     } 
     
   }
-  protected void initValue(float f){
+  void initValue(float f){
     
-    float value = PApplet.map(f, lowValue, maxValue, location.x, location.x+width);
+    float value = map(f, lowValue, maxValue, location.x, location.x+width);
     sliderCtrl.location.x = value;
     
-    //sliderCtrl.location.x = location.x + _x;
-    
+    if(BCF2000){
+      
+      int behValue = (int) map(f, lowValue, maxValue, 0, 127);
+      
+      behringer.setSliderPosition(bGrp, bId, behValue);
+      
+    }
     
   }
-  protected void followMouse(){
+  void behReset(){
+    
+    int behValue = (int) map(sliderCtrl.location.x, lowXPos, maxYPos, 0, 127);
+    behringer.setSliderPosition(bGrp, bId, behValue);
+    
+  }
+  void followMouse(){
     if(dragging) {
       sliderCtrl.location.x = mouseX;
       if(sliderCtrl.location.x <= lowXPos) {
@@ -57,9 +78,9 @@ class Slider {
       editValue();
     }
   }
-  private void editValue(){
+  void editValue(){
     
-    value = PApplet.map(sliderCtrl.location.x, lowXPos, maxYPos, lowValue, maxValue);
+    float value = map(sliderCtrl.location.x, lowXPos, maxYPos, lowValue, maxValue);
    
     if (param.equals("depth")) {
       depth = (int) value;
@@ -83,13 +104,13 @@ class Slider {
       maxDist = (int) value;
     }
    
-    println(param + ": " + value);
+    //println(param + ": " + value);
     
   }
-  protected void reset(){
+  void reset(){
     dragging = false;
   }
-  protected void display(){
+  void display(){
     rectMode(PApplet.CORNER);
     noStroke();
     fill(couleur);

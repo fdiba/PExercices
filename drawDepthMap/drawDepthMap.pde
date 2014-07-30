@@ -8,12 +8,15 @@
  
 import SimpleOpenNI.SimpleOpenNI;
 import ddf.minim.*;
+import javax.sound.midi.MidiMessage; 
+import themidibus.*;
 
 SimpleOpenNI context;
 Minim minim;
 AudioPlayer player;
 
 Menu menu;
+Ramp ramp;
 
 PVector[] pvectors;
 int[] depthValues;
@@ -23,7 +26,12 @@ boolean useColors;
 ArrayList<FloatList> buffers;
 int ySpace;
 int lineNumber;
-ArrayList<Integer> ramp;
+
+//--- behringer ----------//
+
+MidiBus midiBus;
+boolean BCF2000;
+BehringerBCF behringer;
 
 //---- key params --------//
 boolean linesVisibility;
@@ -56,14 +64,27 @@ void setup(){
   player.loop();
   player.mute();
   
-  createRamp();
+  ramp = new Ramp();
   
-  lowestValue = 1700;
+  lowestValue = 1200;
   highestValue = 2300;
   
   setVectors();
   
-  menu = new Menu(new PVector(450, 50));
+  //--- behringer -----------//
+  BCF2000 = true;
+  
+  if(BCF2000){
+    MidiBus.list();
+    midiBus = new MidiBus(this, "BCF2000", "BCF2000");
+    behringer = new BehringerBCF(midiBus);
+  }
+  
+  //-------------------------//
+  
+  //use behringer
+  
+  menu = new Menu(new PVector(450, 50)); //menu depends on BCF2000
   
   buffers = new ArrayList<FloatList>();
   lineNumber = 0;
@@ -72,44 +93,15 @@ void setup(){
   
   linesVisibility = true; 
   
+  
+  
   println("----------------------------------" + "\n" +
           "depth limits: press l + UP OR DOWN" + "\n" +
           "dark lines visibility: press v" + "\n" +
           "use multiple buffers: press b" + "\n" +
+          "use colors: press c" + "\n" +
           "----------------------------------");
   
-}
-void createRamp(){
-  
-  //from red (FF0000) to yellow (FFFF00) to green (00FF00)
-  
-  int r = 255;
-  int g = 0;
-  int b = 0;
-  int step = 1;
-
-  ramp = new ArrayList<Integer>();
-  
-  boolean isDone = false;
-  
-  while(!isDone){
-      
-    if(g<255){
-      
-      g += step;
-      g = constrain(g, 0, 255);
-      ramp.add(color(r, g, b));
-      
-    } else if(g==255){
-
-      r -= step;
-      r = constrain(r, 0, 255);
-      ramp.add(color(r, g, b));
-      if(r==0)isDone = true;
-    }
-    
-  }
-  println(ramp.size());
 }
 void draw(){
   
@@ -200,10 +192,6 @@ void drawVectors(int _ySpace){
     
   } 
 }
-int setColor(float depthValue){
-  int colorId = (int)map(depthValue, lowestValue, highestValue, 0, ramp.size()-1);
-  return ramp.get(colorId);
-}
 void editPointsPosition(PVector oldVector, float oldBufferValue, int i, FloatList actualBufferValues, float oldDepthValue){
     
   for(int j=0; j<width; j+=10){
@@ -222,7 +210,7 @@ void editPointsPosition(PVector oldVector, float oldBufferValue, int i, FloatLis
         int c;
         
         if(useColors){
-          c = setColor(depthValue);  
+          c = ramp.pickColor(depthValue, lowestValue, highestValue);  
         } else {
           c = color(255);
         }
@@ -247,7 +235,7 @@ void editPointsPosition(PVector oldVector, float oldBufferValue, int i, FloatLis
         int c;
         
         if(useColors){
-          c = setColor(depthValue);  
+          c = ramp.pickColor(depthValue, lowestValue, highestValue);  
         } else {
           c = color(75);
         }
@@ -292,6 +280,18 @@ void setSelectedValue(int value) {
     highestValue = constrain(highestValue, lowestValue+100, 7000);
     PApplet.println("highestValue: " + highestValue);
   }
+}
+//------------- MIDI ------------------//
+void midiMessage(MidiMessage message, long timestamp, String bus_name) {
+  
+   int channel = message.getMessage()[0] & 0xFF;
+   int number = message.getMessage()[1] & 0xFF;
+   int value = message.getMessage()[2] & 0xFF;
+   
+   //println("bus " + bus_name + " | channel " + channel + " | num " + number + " | val " + value);
+   
+   if(BCF2000)behringer.midiMessage(channel, number, value);
+   
 }
 //------------- keyboard ------------------//
 void mouseReleased(){
