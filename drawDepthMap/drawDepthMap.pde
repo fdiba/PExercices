@@ -81,10 +81,10 @@ void setup(){
   }
   
   //-------------------------//
-  
-  //use behringer
-  
+    
   menu = new Menu(new PVector(450, 50)); //menu depends on BCF2000
+  
+  if(BCF2000) menu.resetBSliders();
   
   buffers = new ArrayList<FloatList>();
   lineNumber = 0;

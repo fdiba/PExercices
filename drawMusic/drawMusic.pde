@@ -5,7 +5,9 @@
  * date:  14/07/2014 (d/m/y)
  * --------------------------------------------------------------------------
  */
- 
+
+import javax.sound.midi.MidiMessage; 
+import themidibus.*; 
 import ddf.minim.*;
 
 Minim minim;
@@ -18,6 +20,12 @@ ArrayList<FloatList> buffers;
 Menu menu;
 int foo = 1;
 
+//--- behringer ----------//
+
+MidiBus midiBus;
+boolean BCF2000;
+BehringerBCF behringer;
+
 //---- key params --------//
 boolean multipleBuffers;
 
@@ -29,7 +37,6 @@ float rotateXangle;
 float rotateYangle;
 float rotateZangle;
 int amplitude;
-
 
 int ySpace;
 
@@ -48,8 +55,21 @@ void setup(){
   player.mute(); 
     
   setVectors();
+  
+  //--- behringer -----------//
+  BCF2000 = true;
+  
+  if(BCF2000){
+    MidiBus.list();
+    midiBus = new MidiBus(this, "BCF2000", "BCF2000");
+    behringer = new BehringerBCF(midiBus);
+  }
+  
+  //-------------------------//
 
-  menu = new Menu(new PVector(450, 50));
+  menu = new Menu(new PVector(450, 50)); //menu depends on BCF2000
+  
+  if(BCF2000) menu.resetBSliders();
   
   buffers = new ArrayList<FloatList>();
   lineNumber = 0;
@@ -179,6 +199,18 @@ void setBuffers(int _ySpace){
     buffers.add(bufferValues);
   }
   
+}
+//------------- MIDI ------------------//
+void midiMessage(MidiMessage message, long timestamp, String bus_name) {
+  
+   int channel = message.getMessage()[0] & 0xFF;
+   int number = message.getMessage()[1] & 0xFF;
+   int value = message.getMessage()[2] & 0xFF;
+   
+   println("bus " + bus_name + " | channel " + channel + " | num " + number + " | val " + value);
+   
+   if(BCF2000)behringer.midiMessage(channel, number, value);
+   
 }
 //------------- keyboard ------------------//
 void keyPressed() {
