@@ -20,24 +20,25 @@ Ramp ramp;
 
 PVector[] pvectors;
 int[] depthValues;
-boolean switchValue;
-boolean useColors;
 
 ArrayList<FloatList> buffers;
 int ySpace;
 int lineNumber;
 
 //--- behringer ----------//
-
 MidiBus midiBus;
 boolean BCF2000;
 BehringerBCF behringer;
 
 //---- key params --------//
-boolean linesVisibility;
-boolean multipleBuffers;
+boolean switchValue;
 int lowestValue;
 int highestValue;
+
+boolean linesVisibility;
+boolean multipleBuffers;
+boolean useColors;
+
 
 //---- params ------------//
 float xTrans = 0;
