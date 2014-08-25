@@ -13,7 +13,6 @@ class SliderController {
     
   }
   protected void display(){
-    
     rectMode(PApplet.CENTER);
     noStroke();
     fill(255);

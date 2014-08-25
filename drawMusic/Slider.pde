@@ -16,7 +16,7 @@ class Slider {
   int bGrp;
   int bId;
   
-  Slider(PVector _location, String _param, float _lowValue, float _maxValue, int _color) {
+  Slider(PApplet pApplet, PVector _location, String _param, float _lowValue, float _maxValue, int _color) {
     location = _location;
     width = 100; 
     sliderCtrl = new SliderController(new PVector(location.x+width/2, location.y));
@@ -35,19 +35,14 @@ class Slider {
     if(mousePosition.x > sliderCtrl.location.x - sliderCtrl.width/2 && mousePosition.x < sliderCtrl.location.x + sliderCtrl.width/2 &&
        mousePosition.y > sliderCtrl.location.y - sliderCtrl.width/2 && mousePosition.y <sliderCtrl. location.y + sliderCtrl.width/2){
       
-      //PApplet.println("hit");
       dragging = true;
-      //sliderCtrl.location.x = mousePosition.x;
     } 
     
   }
   void initValue(float f){
     
     float value = PApplet.map(f, lowValue, maxValue, location.x, location.x+width);
-    sliderCtrl.location.x = value;
-    
-    //sliderCtrl.location.x = location.x + _x;
-    
+    sliderCtrl.location.x = value;    
     
   }
   void followMouse(){
@@ -64,27 +59,9 @@ class Slider {
   void editValue(){
     
     value = PApplet.map(sliderCtrl.location.x, lowXPos, maxYPos, lowValue, maxValue);
-   
-    if (param.equals("amplitude")) {
-      amplitude = (int) value;
-    } else if (param.equals("xTrans")){
-      xTrans = value;
-    } else if (param.equals("zTrans")){
-      zTrans = value;
-    } else if (param.equals("yTrans")){
-      yTrans = value;
-    } else if (param.equals("rotateX")){
-      rotateXangle = value;
-    } else if (param.equals("rotateY")){
-      rotateYangle = value;
-    } else if (param.equals("rotateZ")){
-      rotateZangle = value;
-    } else if (param.equals("ySpace")){
-      ySpace = (int) value;
-    }
-   
+    params.put(param, (int) value);
     println(param + ": " + value);
-    
+     
   }
   void reset(){
     dragging = false;

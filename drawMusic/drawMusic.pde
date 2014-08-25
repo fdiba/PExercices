@@ -5,7 +5,7 @@
  * date:  14/07/2014 (d/m/y)
  * --------------------------------------------------------------------------
  */
-
+import java.util.*;
 import javax.sound.midi.MidiMessage; 
 import themidibus.*; 
 import ddf.minim.*;
@@ -13,32 +13,20 @@ import ddf.minim.*;
 Minim minim;
 AudioPlayer player;
 PVector[] pvectors;
-//FloatList bufferValues;
 
 ArrayList<FloatList> buffers;
 
+Map<String, Integer> params;
+int[] colors = {-8410437,-9998215,-1849945,-5517090,-4250587,-14178341,-5804972,-3498634};
 Menu menu;
-int foo = 1;
 
 //--- behringer ----------//
-
 MidiBus midiBus;
 boolean BCF2000;
 BehringerBCF behringer;
 
 //---- key params --------//
 boolean multipleBuffers;
-
-//---- params ------------//
-float xTrans = 0;
-float yTrans = 0;
-float zTrans = 0;
-float rotateXangle;
-float rotateYangle;
-float rotateZangle;
-int amplitude;
-
-int ySpace;
 
 int jCut = 10;
 
@@ -60,21 +48,31 @@ void setup(){
   BCF2000 = true;
   
   if(BCF2000){
-    MidiBus.list();
+    //MidiBus.list();
     midiBus = new MidiBus(this, "BCF2000", "BCF2000");
     behringer = new BehringerBCF(midiBus);
   }
-  
   //-------------------------//
 
-  menu = new Menu(new PVector(450, 50)); //menu depends on BCF2000
+  params = new HashMap<String, Integer>();
+  
+  Object[][] objects = { {"xTrans", -2500, 2500, colors[0], 0, 0, 0},
+                         {"yTrans", -2500, 2500, colors[1], 0, 1, 0},
+                         {"zTrans", -2500, 2500, colors[2], 0, 2, -200},
+                         {"rotateX", -360, 360, colors[0], 0, 3, 45},
+                         {"rotateY", -360, 360, colors[1], 0, 4, 0},
+                         {"rotateZ", -360, 360, colors[2], 0, 5, 0},
+                         {"amplitude", 0, height, colors[4], 0, 6, 25},
+                         {"ySpace", 10, 150, colors[6], 0, 7, 10} };
+  
+  createMenu(objects); //menu depends on BCF2000
   
   if(BCF2000) menu.resetBSliders();
   
   buffers = new ArrayList<FloatList>();
   lineNumber = 0;
     
-  setBuffers(ySpace);
+  setBuffers(params.get("ySpace"));
   
   println("use multiple buffers: press b"); 
   
@@ -87,11 +85,11 @@ void draw(){
   
   pushMatrix();
   
-  translate(width/2 + xTrans, height/2 + yTrans, zTrans);
+  translate(width/2 + params.get("xTrans"), height/2 + params.get("yTrans"), params.get("zTrans"));
   
-  rotateX(radians(rotateXangle));
-  rotateY(radians(rotateYangle));
-  rotateZ(radians(rotateZangle));
+  rotateX(radians(params.get("rotateX")));
+  rotateY(radians(params.get("rotateY")));
+  rotateZ(radians(params.get("rotateZ")));
   
   translate(-width/2, -height/2, 0);
   
@@ -105,7 +103,7 @@ void draw(){
   
   addAndEraseBuffers();
    
-  drawVectors(ySpace);
+  drawVectors(params.get("ySpace"));
    
   popMatrix();
    
@@ -113,6 +111,9 @@ void draw(){
    
   lineNumber = 0;
    
+}
+void createMenu(Object[][] objects){  
+  menu = new Menu(this, new PVector(450, 50), objects);
 }
 void drawVectors(int _ySpace){
   
@@ -166,12 +167,10 @@ void editPointsPosition(PVector oldVector, float oldBufferValue, int i, FloatLis
     if(oldVector != null){
          
       if(j != jCut){
-        
-        //float alpha = map(i, 0, height, 255, 0);
-        
+             
         stroke(255);
-        line(oldVector.x, oldVector.y, oldVector.z + oldBufferValue*amplitude,
-        actualVector.x, actualVector.y, actualVector.z + actualBufferValue*amplitude);
+        line(oldVector.x, oldVector.y, oldVector.z + oldBufferValue*params.get("amplitude"),
+        actualVector.x, actualVector.y, actualVector.z + actualBufferValue*params.get("amplitude"));
       }
 
     }
@@ -207,7 +206,7 @@ void midiMessage(MidiMessage message, long timestamp, String bus_name) {
    int number = message.getMessage()[1] & 0xFF;
    int value = message.getMessage()[2] & 0xFF;
    
-   println("bus " + bus_name + " | channel " + channel + " | num " + number + " | val " + value);
+   //println("bus " + bus_name + " | channel " + channel + " | num " + number + " | val " + value);
    
    if(BCF2000)behringer.midiMessage(channel, number, value);
    
