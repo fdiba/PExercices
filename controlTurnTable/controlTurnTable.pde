@@ -73,7 +73,6 @@ void createMenu(Object[][] objects){
 }
 void useBrake(){
   arduino.digitalWrite(9, Arduino.HIGH); //Engage the Brake for Channel A
-  delay(1000);
 }
 //----------- key ------------------//
 void keyPressed() {
@@ -84,6 +83,7 @@ void keyPressed() {
 void toggleValue() {
   reverse = !reverse;  
   useBrake();
+  delay(1000);
 }
 //----------- mouse ----------------//
 void mouseReleased() {
@@ -91,7 +91,7 @@ void mouseReleased() {
 }
 //------------- EXIT ---------------//
 void exit() {
-  arduino.analogWrite(3, 0);
+  useBrake();
   println("exiting");
   super.exit();
 }
