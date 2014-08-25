@@ -55,7 +55,7 @@ class BehringerBCF{
       }
       
       //id<7 because slider 8 do not exist
-      if(number==38 && id<4) menu.sliders.get(id).editValWithBeh(chan185num6Value);
+      if(number==38 && id<4) menu.sliders[id].editValWithBeh(chan185num6Value);
       
       
     }

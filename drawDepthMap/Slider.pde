@@ -19,7 +19,7 @@ class Slider {
   
   //-----------------//
   
-  Slider(PVector _location, String _param, float _lowValue, float _maxValue, int _color) {
+  Slider(PApplet pApplet, PVector _location, String _param, float _lowValue, float _maxValue, int _color) {
     location = _location;
     width = 100; 
     sliderCtrl = new SliderController(new PVector(location.x+width/2, location.y));
@@ -91,30 +91,8 @@ class Slider {
   void editValue(){
     
     float value = map(sliderCtrl.location.x, lowXPos, maxYPos, lowValue, maxValue);
-    
-    if (param.equals("depth")) {
-      depth = (int) value;
-    } else if (param.equals("amplitude")){
-      amplitude = (int) value;
-    } else if (param.equals("xTrans")){
-      xTrans = value;
-    } else if (param.equals("zTrans")){
-      zTrans = value;
-    } else if (param.equals("yTrans")){
-      yTrans = value;
-    } else if (param.equals("rotateX")){
-      rotateXangle = value;
-    } else if (param.equals("rotateY")){
-      rotateYangle = value;
-    } else if (param.equals("rotateZ")){
-      rotateZangle = value;
-    } else if (param.equals("ySpace")){
-      ySpace = (int) value;
-    } else if (param.equals("maxDist")){
-      maxDist = (int) value;
-    }
-    
-    //println(param + ": " + value);
+    params.put(param, (int) value);
+    println(param + ": " + value);
     
   }
   void reset(){

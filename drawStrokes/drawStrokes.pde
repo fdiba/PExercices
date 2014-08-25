@@ -6,6 +6,7 @@
  * --------------------------------------------------------------------------
  */
 
+import java.util.*;
 import blobDetection.BlobDetection;
 import blobDetection.Blob;
 import blobDetection.EdgeVertex;
@@ -18,15 +19,11 @@ SimpleOpenNI context;
 PImage depthImg;
 int[] depthValues;
 
+Map<String, Integer> params;
+int[] colors = {-8410437,-9998215,-1849945,-5517090,-4250587,-14178341,-5804972,-3498634};
 Menu menu;
+
 ArrayList<ArrayList<PVector>> contours;
-
-//--------- params -------//
-int blurRadius;
-int blobThreshold;
-int edgeMinNumber;
-int distMin;
-
 
 //--- behringer ----------//
 MidiBus midiBus;
@@ -62,10 +59,17 @@ void setup(){
     midiBus = new MidiBus(this, "BCF2000", "BCF2000");
     behringer = new BehringerBCF(midiBus);
   }
-  
   //-------------------------//
   
-  menu = new Menu(new PVector(450, 50)); //menu depends on BCF2000
+  params = new HashMap<String, Integer>();
+  
+  Object[][] objects = { {"blobThreshold", 0, 255, colors[0], 0, 0, 72},
+                         {"blurRadius", 1, 200, colors[1], 0, 1, 2},
+                         {"edgeMinNumber", 0, 500, colors[2], 0, 2, 375},
+                         {"distMin", 0, 100, colors[3], 0, 3, 10} };
+  
+  createMenu(objects); //menu depends on BCF2000
+  
   if(BCF2000) menu.resetBSliders();
   
   depthImg = createImage(640, 480, ARGB);
@@ -78,6 +82,9 @@ void setup(){
   blobDetection.setPosDiscrimination(true); //find bright areas
   blobDetection.setThreshold(0.2f); //between 0.0f and 1.0f
 
+}
+void createMenu(Object[][] objects){  
+  menu = new Menu(this, new PVector(450, 50), objects);
 }
 void setHighestAndLowestValues(){
   
@@ -100,9 +107,8 @@ void draw(){
   drawDepthMap(0, 0);
   depthImg.updatePixels();
   
-  fastblur(depthImg, blurRadius);
-  
   bImg.copy(depthImg, 0, 0, depthImg.width, depthImg.height, 0, 0, bImg.width, bImg.height);
+  fastblur(bImg, params.get("blurRadius"));
   
   createBlackBorder();
   
@@ -134,6 +140,11 @@ void createBlackBorder(){
 }
 void drawStrokes(){
   
+  strokeWeight(2);
+  stroke(0, 255, 0);
+  noFill();
+  //fill(255);
+  
   for(int i=0; i<contours.size(); i++){
     
     ArrayList<PVector> contour = contours.get(i);
@@ -149,10 +160,6 @@ void drawStrokes(){
 
     }
     
-    strokeWeight(2);
-    stroke(0, 255, 0);
-    noFill();
-    //fill(255);
     endShape(CLOSE);
 
   }
@@ -191,7 +198,7 @@ void createStrokes(){
     
     blob = blobDetection.getBlob(n);
     
-    if(blob != null && blob.getEdgeNb() > edgeMinNumber){
+    if(blob != null && blob.getEdgeNb() > params.get("edgeMinNumber")){
       
       ArrayList<PVector> contour = new ArrayList<PVector>();
 
@@ -208,7 +215,7 @@ void createStrokes(){
           
           PVector v = contour.get(contour.size()-1);
           float distance = dist(eB.x*depthImg.width, eB.y*depthImg.height, v.x, v.y);
-          if(distance>distMin)contour.add(new PVector(eB.x*depthImg.width, eB.y*depthImg.height));
+          if(distance>params.get("distMin"))contour.add(new PVector(eB.x*depthImg.width, eB.y*depthImg.height));
           
         }
         
@@ -238,7 +245,7 @@ void updateDepthMap(int lValue, int hValue){
 
       if(depthValue >= lValue && depthValue <= hValue){
         
-        cValue = (int) map(depthValue, lValue, hValue, 255, blobThreshold);
+        cValue = (int) map(depthValue, lValue, hValue, 255, params.get("blobThreshold"));
         depthImg.pixels[pixId] = (255 << 24) | (cValue << 16) | (cValue << 8) | cValue;
         
       } else {

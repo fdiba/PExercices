@@ -19,7 +19,7 @@ class Slider {
   
   //-----------------//
   
-  Slider(PVector _location, String _param, float _lowValue, float _maxValue, int _color) {
+  Slider(PApplet pApplet, PVector _location, String _param, float _lowValue, float _maxValue, int _color) {
     location = _location;
     width = 100; 
     sliderCtrl = new SliderController(new PVector(location.x+width/2, location.y));
@@ -91,17 +91,7 @@ class Slider {
   void editValue(){
     
     float value = map(sliderCtrl.location.x, lowXPos, maxYPos, lowValue, maxValue);
-    
-    if (param.equals("blobThreshold")) {
-      blobThreshold = (int) value;
-    } else if (param.equals("blurRadius")) {
-      blurRadius = (int) value;
-    } else if (param.equals("edgeMinNumber")) {
-      edgeMinNumber = (int) value;
-    } else if (param.equals("distMin")) {
-      distMin = (int) value;
-    }
-    
+    params.put(param, (int) value);
     println(param + ": " + value);
     
   }

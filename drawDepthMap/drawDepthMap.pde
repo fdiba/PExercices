@@ -5,7 +5,8 @@
  * date:  14/07/2014 (d/m/y)
  * --------------------------------------------------------------------------
  */
- 
+
+import java.util.*;
 import SimpleOpenNI.SimpleOpenNI;
 import ddf.minim.*;
 import javax.sound.midi.MidiMessage; 
@@ -15,14 +16,16 @@ SimpleOpenNI context;
 Minim minim;
 AudioPlayer player;
 
+Map<String, Integer> params;
+int[] colors = {-8410437,-9998215,-1849945,-5517090,-4250587,-14178341,-5804972,-3498634};
 Menu menu;
+
 Ramp ramp;
 
 PVector[] pvectors;
 int[] depthValues;
 
 ArrayList<FloatList> buffers;
-int ySpace;
 int lineNumber;
 
 //--- behringer ----------//
@@ -38,18 +41,6 @@ int highestValue;
 boolean linesVisibility;
 boolean multipleBuffers;
 boolean useColors;
-
-
-//---- params ------------//
-float xTrans = 0;
-float yTrans = 0;
-float zTrans = 0;
-float rotateXangle;
-float rotateYangle;
-float rotateZangle;
-int amplitude;
-int depth;
-int maxDist;
 
 void setup(){
   
@@ -80,29 +71,41 @@ void setup(){
     midiBus = new MidiBus(this, "BCF2000", "BCF2000");
     behringer = new BehringerBCF(midiBus);
   }
-  
   //-------------------------//
     
-  menu = new Menu(new PVector(450, 50)); //menu depends on BCF2000
+  params = new HashMap<String, Integer>();
+  
+  Object[][] objects = { {"xTrans", -2500, 2500, colors[0], 0, 0, 0},
+                         {"yTrans", -2500, 2500, colors[1], 0, 1, 0},
+                         {"zTrans", -2500, 2500, colors[2], 0, 2, -200},
+                         {"rotateX", -360, 360, colors[0], 1, 0, 45},
+                         {"rotateY", -360, 360, colors[1], 1, 1, 0},
+                         {"rotateZ", -360, 360, colors[2], 1, 2, 0},
+                         {"amplitude", 1, 200, colors[4], 1, 3, 25},
+                         {"ySpace", 10, 150, colors[5], 1, 4, 10},
+                         {"depth", -200, 200, colors[6], 1, 5, 60},
+                         {"maxDist", 1, 250, colors[7], 1, 6, 45} };
+  
+  createMenu(objects); //menu depends on BCF2000
   
   if(BCF2000) menu.resetBSliders();
   
   buffers = new ArrayList<FloatList>();
   lineNumber = 0;
   
-  setBuffers(ySpace);
+  setBuffers(params.get("ySpace"));
   
   linesVisibility = true; 
-  
-  
   
   println("----------------------------------" + "\n" +
           "depth limits: press l + UP OR DOWN" + "\n" +
           "dark lines visibility: press v" + "\n" +
           "use multiple buffers: press b" + "\n" +
-          "use colors: press c" + "\n" +
-          "----------------------------------");
+          "use colors: press c");
   
+}
+void createMenu(Object[][] objects){  
+  menu = new Menu(this, new PVector(450, 50), objects);
 }
 void draw(){
   
@@ -114,22 +117,27 @@ void draw(){
   addAndEraseBuffers();
   
   pushMatrix();
-    
-  translate(width/2 + xTrans, height/2 + yTrans, zTrans);
   
-  rotateX(radians(rotateXangle));
-  rotateY(radians(rotateYangle));
-  rotateZ(radians(rotateZangle));
+  translateAndRotate();
   
-  translate(-width/2, -height/2, 0);
-  
-  drawVectors(ySpace);
+  drawVectors(params.get("ySpace"));
   
   popMatrix();
   
   menu.display();
   
-  lineNumber = 0; 
+  lineNumber = 0;
+}
+void translateAndRotate(){
+  
+  translate(width/2 + params.get("xTrans"), height/2 + params.get("yTrans"), params.get("zTrans"));
+  
+  rotateX(radians(params.get("rotateX")));
+  rotateY(radians(params.get("rotateY")));
+  rotateZ(radians(params.get("rotateZ")));
+  
+  translate(-width/2, -height/2, 0);
+  
 }
 void addAndEraseBuffers(){
     
@@ -218,11 +226,11 @@ void editPointsPosition(PVector oldVector, float oldBufferValue, int i, FloatLis
         
         depthValue = setColorWeightDepthValue(depthValue, c);
         
-        float ovz = oldVector.z - oldDepthValue*depth - oldBufferValue*amplitude;
-        float avz = actualVector.z - depthValue*depth - actualBufferValue*amplitude;
+        float ovz = oldVector.z - oldDepthValue*params.get("depth") - oldBufferValue*params.get("amplitude");
+        float avz = actualVector.z - depthValue*params.get("depth") - actualBufferValue*params.get("amplitude");
         
         float distance = abs(ovz-avz); 
-        if(distance < maxDist)line(oldVector.x, oldVector.y, ovz, actualVector.x, actualVector.y, avz);
+        if(distance < params.get("maxDist"))line(oldVector.x, oldVector.y, ovz, actualVector.x, actualVector.y, avz);
 
       } else {
                 
@@ -243,11 +251,11 @@ void editPointsPosition(PVector oldVector, float oldBufferValue, int i, FloatLis
         
         depthValue = setColorWeightDepthValue(depthValue, c);
         
-        float ovz = oldVector.z - oldDepthValue*depth - oldBufferValue*amplitude;
-        float avz = actualVector.z - depthValue*depth - actualBufferValue*amplitude;
+        float ovz = oldVector.z - oldDepthValue*params.get("depth") - oldBufferValue*params.get("amplitude");
+        float avz = actualVector.z - depthValue*params.get("depth") - actualBufferValue*params.get("amplitude");
         
         float distance = abs(ovz-avz); 
-        if(distance < maxDist && linesVisibility)line(oldVector.x, oldVector.y, ovz, actualVector.x, actualVector.y, avz);
+        if(distance < params.get("maxDist") && linesVisibility)line(oldVector.x, oldVector.y, ovz, actualVector.x, actualVector.y, avz);
              
       }
       

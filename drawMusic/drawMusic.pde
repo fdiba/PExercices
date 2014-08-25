@@ -85,13 +85,7 @@ void draw(){
   
   pushMatrix();
   
-  translate(width/2 + params.get("xTrans"), height/2 + params.get("yTrans"), params.get("zTrans"));
-  
-  rotateX(radians(params.get("rotateX")));
-  rotateY(radians(params.get("rotateY")));
-  rotateZ(radians(params.get("rotateZ")));
-  
-  translate(-width/2, -height/2, 0);
+  translateAndRotate();
   
   if(jCut < width) {
     jCut += 20;
@@ -111,6 +105,17 @@ void draw(){
    
   lineNumber = 0;
    
+}
+void translateAndRotate(){
+  
+  translate(width/2 + params.get("xTrans"), height/2 + params.get("yTrans"), params.get("zTrans"));
+  
+  rotateX(radians(params.get("rotateX")));
+  rotateY(radians(params.get("rotateY")));
+  rotateZ(radians(params.get("rotateZ")));
+  
+  translate(-width/2, -height/2, 0);
+  
 }
 void createMenu(Object[][] objects){  
   menu = new Menu(this, new PVector(450, 50), objects);
