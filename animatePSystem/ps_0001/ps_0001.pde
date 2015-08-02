@@ -12,7 +12,7 @@ int n;
 boolean paused;
 
 float turbulence, neighborhood;
-float rebirthRadius;
+float rebirthRadius, independence, speed, viscosity, spread;
 float cameraRate;
 
 void setup() {
@@ -24,27 +24,32 @@ void setup() {
 
   cameraCenter = new PVector();
   avg = new PVector();
-  globalOffset = new PVector(0, 1. / 3, 2. / 3);
+  globalOffset = new PVector(0f, 1/3f, 2/3f);
 
   particles = new Vector();
-  for (int i = 0; i < n; i++) particles.add(new Particle());
+  for (int i=0; i<n; i++) particles.add(new Particle());
+  
 }
 
 void draw() {
  
-  avg = new PVector();
-  for(int i = 0; i < particles.size(); i++) {
+  avg.mult(0);
+  
+  for(int i=0; i<particles.size(); i++) {
     Particle p = ((Particle) particles.get(i));    
-    avg.add(p.position);
+    avg.add(p.pos);
   }
+  //avg.scaleSelf(1. / particles.size());
+  //avg.mult(1f/particles.size());
   avg.div(particles.size());
   
    //----------- center cam position ----------------//
-  cameraCenter.mult(1-cameraRate);
-  avg.mult(cameraRate);
-  cameraCenter.add(avg);
+   
+  cameraCenter.mult(1f-cameraRate);
+  cameraCenter.add(PVector.mult(avg, cameraRate));
+  
   translate(-cameraCenter.x, -cameraCenter.y, -cameraCenter.z);
-  //----------- end center cam position ----------------//
+
 
   background(0);
   noFill();
@@ -52,17 +57,18 @@ void draw() {
 
   for (int i = 0; i < particles.size (); i++) {
     Particle p = ((Particle) particles.get(i));
-    if (!paused) p.update();
+    if(!paused) p.update();
     p.display();
   }
 
 
   if (particles.size() > n) particles.setSize(n);
-  while (particles.size () < n) particles.add(new Particle());
+  while (particles.size() < n) particles.add(new Particle());
 
-  globalOffset.add(turbulence/neighborhood, 
-  turbulence/neighborhood, turbulence/neighborhood);
+  float value = turbulence/neighborhood;
+  globalOffset.add(value, value, value);
   
+  println(frameRate);
   
 }
 Particle randomParticle() {
@@ -72,9 +78,13 @@ void setParameters() {
   
   n = 10000;
   turbulence = 1.3;
-  neighborhood = 700;
+  neighborhood = 700f;
   
-  rebirthRadius = 250;
+  rebirthRadius = 250f;
+  independence = .15;
+  speed = 24f;
+  viscosity = .1;
+  spread = 100f;
   
   cameraRate = .1;
   
