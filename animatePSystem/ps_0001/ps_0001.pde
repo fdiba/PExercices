@@ -68,7 +68,7 @@ void draw() {
   float value = turbulence/neighborhood;
   globalOffset.add(value, value, value);
   
-  println(frameRate);
+  //println(frameRate);
   
 }
 Particle randomParticle() {
