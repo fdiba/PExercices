@@ -17,7 +17,7 @@ class Particle {
 
     force.mult(0);
 
-    applyFlockingForce();
+    applyFlockingForce(PVector.mult(localOffset, independence));
 
     applyViscosityForce();
 
@@ -38,13 +38,18 @@ class Particle {
   void applyViscosityForce() {
     force.add(PVector.mult(velocity, -viscosity));
   }
-  void applyFlockingForce() {
+  void applyFlockingForce(PVector lOffset) {
 
     PVector p = PVector.div(pos, neighborhood);
 
-    force.add(noise(p.x + globalOffset.x + localOffset.x * independence, p.y, p.z) - .5, 
-    noise(p.x, p.y + globalOffset.y  + localOffset.y * independence, p.z) - .5, 
-    noise(p.x, p.y, p.z + globalOffset.z + localOffset.z * independence) - .5);
+    force.add(noise(p.x + globalOffset.x + lOffset.x, p.y, p.z) - .5, 
+    noise(p.x, p.y + globalOffset.y  + lOffset.y, p.z) - .5, 
+    noise(p.x, p.y, p.z + globalOffset.z + lOffset.z) - .5);
+    
+    /*force.add(noise(p.x, p.y, p.z)-.5, 
+      noise(p.x, p.y, p.z)-.5, 
+      noise(p.x, p.y, p.z)-.5);*/
+    
   }
   void resetPosition() {
 
@@ -55,6 +60,7 @@ class Particle {
     if (particles.size()== 0) pos.add(avg);
     else pos.add(randomParticle().pos);
   }
+  //very slow compare to prev version with toxiclibs
   float getDistToPoint(PVector origin, PVector normal, PVector pos) {
     PVector hypotenuse = PVector.sub(pos, origin);
     float c = hypotenuse.mag();
