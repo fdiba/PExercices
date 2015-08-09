@@ -64,11 +64,22 @@ class Particle {
   float getDistToPoint(PVector origin, PVector normal, PVector pos) {
     PVector hypotenuse = PVector.sub(pos, origin);
     float c = hypotenuse.mag();
+    
     hypotenuse.normalize();
-    float alpha = PVector.angleBetween(normal, hypotenuse);
-    return cos(alpha) * c;
+    normal.normalize();
+    
+    float cos = PVector.dot(normal, hypotenuse);
+    
+    
+    return cos*c;
+    
+    //float alpha = PVector.angleBetween(normal, hypotenuse);
+    //return cos(alpha) * c;
   }
   void display() {
+    
+   //focalPlane = avg.get();
+   //normal = cam.getPosition();
 
     float distanceToFocalPlane = getDistToPoint(focalPlane, new PVector(normal[0], normal[1], normal[2]), pos);
 
