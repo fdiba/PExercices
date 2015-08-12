@@ -10,8 +10,8 @@ uniform float gWidth;
 uniform float gHeight;
 uniform float normal[3];
 uniform float focalPlane[3];
-uniform float strokeAlpha;
-
+//uniform float strokeAlpha;
+uniform float dofRatio;
  
 attribute vec4 vertex;
 attribute vec4 color;
@@ -27,8 +27,13 @@ float getDistToPoint(){
   vec3 norm = vec3(normal[0], normal[1], normal[2]);
   vec3 origin =  vec3(focalPlane[0], focalPlane[1], focalPlane[2]);
 
-  vec3 hypotenuse = norm-origin;
-  //vec3 hypotenuse = origin-norm;
+  //vec3 hypotenuse = norm-origin;
+  vec3 hypotenuse = origin-norm;
+
+  //float hypoSQ = norm.length*norm.length + origin.length*origin.length;
+  
+  //float c  = sqrt(hypoSQ); 
+
 
   float c = length(hypotenuse);
   
@@ -42,13 +47,26 @@ float getDistToPoint(){
 }
 void main() {
 
+  vec2 m0ffset = vec2(offset);
+
   //------------- TODO SET STROKEWEIGHT --------//
   float distanceToFocalPlane = getDistToPoint();
-  float alpha = 255/(distanceToFocalPlane*distanceToFocalPlane)/255;
-  alpha += strokeAlpha;
-  alpha = clamp(alpha, .1, 1.);
+  
+  distanceToFocalPlane *= 1. / dofRatio;
+  distanceToFocalPlane = clamp(distanceToFocalPlane, 1., 15.);
+  
+
+  float alpha = (255./(distanceToFocalPlane*distanceToFocalPlane))/255.;
+  //alpha += strokeAlpha;
+  //alpha = clamp(alpha, .1, 1.);
 
   //alpha = strokeAlpha;
+
+  if(m0ffset[0] > 0)m0ffset[0]+=distanceToFocalPlane;
+  if(m0ffset[0] < 0)m0ffset[0]+=-distanceToFocalPlane;
+  if(m0ffset[1] > 0)m0ffset[1]+=distanceToFocalPlane;
+  if(m0ffset[1] < 0)m0ffset[1]+=-distanceToFocalPlane;
+
 
   vec4 col = vec4(1.0, 1.0, 1.0, alpha);
   //vec4 col = vec4(1.0, 1.0, 1.0, 1.0);
@@ -58,7 +76,7 @@ void main() {
   //vec4 clip = projection * pos;
 
   vec4 clip = transform * vertex;
-  gl_Position = clip + projection * vec4(offset, 0, 0);
+  gl_Position = clip + projection * vec4(m0ffset, 0, 0);
   
 
   if(useColors){
@@ -79,6 +97,6 @@ void main() {
   vertColor = col;   
 
   center = clip.xy;
-  pos = offset;
+  pos = m0ffset;
 
 }

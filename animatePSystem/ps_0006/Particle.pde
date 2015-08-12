@@ -59,52 +59,39 @@ class Particle {
     if (particles.size()== 0) pos.add(avg);
     else pos.add(randomParticle().pos);
   }
-  //very slow compare to prev version with toxiclibs
-  float getDistToPoint(PVector origin, PVector normal, PVector pos) {
+  //slow compare to prev version with toxiclibs
+  float getDistToPoint(PVector psCenter, PVector cameraPos) {
+
+    PVector camPos = cameraPos.get();    
+    PVector v  = PVector.sub(pos, psCenter);
     
+    float sn = -camPos.dot(v);
+ 
+    float sd = camPos.mag();
     
+    sd *= sd;
     
-    PVector hypotenuse = PVector.sub(pos, origin);
-    float c = hypotenuse.mag();
-
-    hypotenuse.normalize();
-    normal.normalize();
-
-    float cos = PVector.dot(normal, hypotenuse);
-
-
-    return cos*c;
-
-    //float alpha = PVector.angleBetween(normal, hypotenuse);
-    //return cos(alpha) * c;
+    camPos.mult(sn / sd);
+        
+    PVector isec = PVector.add(pos, camPos);
+    
+    float dist = isec.dist(pos);
+    
+    return dist;
   }
   void displayWithSh() {
-
-    //TODO set strokeweight in shader
-    float distanceToFocalPlane = getDistToPoint(focalPlane, new PVector(normal[0], normal[1], normal[2]), pos);
-
-    //distanceToFocalPlane *= 1/dofRatio;
-    //distanceToFocalPlane = constrain(distanceToFocalPlane, 1, 15);
-    
-    //strokeWeight(distanceToFocalPlane);
-    //stroke(255, constrain(255 / (distanceToFocalPlane * distanceToFocalPlane), 1, 255));
-
-
-    //stroke(255, 0, 0, 255);
     point(pos.x, pos.y, pos.z);
   }
   void display() {
-    
-    float distanceToFocalPlane = getDistToPoint(focalPlane, new PVector(normal[0], normal[1], normal[2]), pos);
 
-    distanceToFocalPlane *= 1/dofRatio;
+    float distanceToFocalPlane = getDistToPoint(psCenter, cameraPosition);
+
+    distanceToFocalPlane /= dofRatio;
     distanceToFocalPlane = constrain(distanceToFocalPlane, 1, 15);
     strokeWeight(distanceToFocalPlane);
     stroke(255, constrain(255 / (distanceToFocalPlane * distanceToFocalPlane), 1, 255));
-
-
-    //stroke(255, 0, 0, 255);
     point(pos.x, pos.y, pos.z);
+    
   }
 }
 

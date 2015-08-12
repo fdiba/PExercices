@@ -23,8 +23,9 @@ float turbulence, neighborhood;
 float rebirthRadius, independence, speed, viscosity, spread, dofRatio;
 float cameraRate;
 
-PVector focalPlane;
-float[] normal;
+PVector psCenter;
+PVector cameraPosition;
+float[] camPos;
 
 int def;
 
@@ -35,7 +36,7 @@ PShader defaultShader;
 boolean drawRoundRect = false;
 boolean useColors = true;
 float strokeWeight = 2f;
-float strokeAlpha = 1f;
+float blurEffect;
 boolean useShader = false;
 
 void setup() {
@@ -62,9 +63,8 @@ void setup() {
   pointShader.set("tex1", textColor);
   pointShader.set("gWidth", (float) 1024);
   pointShader.set("gHeight", (float) 768);
-  
+
   defaultShader = loadShader("pointfrag.glsl", "pointvert.glsl");
-  
 }
 
 void draw() {
@@ -83,39 +83,40 @@ void draw() {
 
   translate(-cameraCenter.x, -cameraCenter.y, -cameraCenter.z);
 
-  focalPlane = avg.get();
-  normal = cam.getPosition();
+  //to calculate distance form plane
+  psCenter = avg.get();
+  
+  camPos = cam.getPosition();
+  cameraPosition = new PVector(camPos[0], camPos[1], camPos[2]);
+  cameraPosition.normalize();
 
   //------- update shader --------//
   pointShader.set("useColors", useColors);
-  float[] fPlane = {
-    focalPlane.x, focalPlane.y, focalPlane.z
-  };
-  pointShader.set("focalPlane", fPlane);
-  pointShader.set("normal", normal);
+  
+  pointShader.set("psCenter", psCenter);
+  
+  pointShader.set("cameraPosition", cameraPosition);
 
   pointShader.set("drawRoundRect", drawRoundRect);
   pointShader.set("strokeWeight", strokeWeight);
-  //pointShader.set("strokeAlpha", strokeAlpha);
   pointShader.set("dofRatio", dofRatio);
+  pointShader.set("blurEffect", blurEffect);
 
   background(def);
   noFill();
   hint(DISABLE_DEPTH_TEST);
 
   if (useShader) {
-    
+
     shader(pointShader);
-    
+
     for (int i = 0; i < particles.size (); i++) {
 
       Particle p = ((Particle) particles.get(i));
       if (!paused) p.update();
 
       p.displayWithSh();
-      
     }
-    
   } else {
 
     resetShader();
@@ -127,7 +128,6 @@ void draw() {
       if (!paused) p.update();
 
       p.display();
-      
     }
   }
 
@@ -142,7 +142,6 @@ void draw() {
   globalOffset.add(value, value, value);
 
   println(frameRate);
-  
 }
 Particle randomParticle() {
   return ((Particle) particles.get((int) random(particles.size())));
