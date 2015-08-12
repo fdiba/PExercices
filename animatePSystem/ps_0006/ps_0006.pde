@@ -34,10 +34,10 @@ PShader pointShader;
 PShader defaultShader;
 
 boolean drawRoundRect = false;
-boolean useColors = true;
+boolean useColors = false;
 float strokeWeight = 2f;
 float blurEffect;
-boolean useShader = false;
+boolean useShader = true;
 
 void setup() {
 
@@ -103,6 +103,8 @@ void draw() {
   pointShader.set("blurEffect", blurEffect);
 
   background(def);
+  //background(127, 127, 0);
+  
   noFill();
   hint(DISABLE_DEPTH_TEST);
 
@@ -141,7 +143,7 @@ void draw() {
   float value = turbulence/neighborhood;
   globalOffset.add(value, value, value);
 
-  println(frameRate);
+  //println(frameRate);
 }
 Particle randomParticle() {
   return ((Particle) particles.get((int) random(particles.size())));
@@ -153,7 +155,8 @@ void keyPressed() {
 void savePicture() {
   Date date = new Date();
   int num = int(random(1000));
-  String name = "data/images/ps-"+date.getTime()+".png";
+  //String name = "data/images/ps-"+date.getTime()+".png";
+  String name = "data/images/ps-"+date.getTime()+".jpg";
   save(name);
 }
 

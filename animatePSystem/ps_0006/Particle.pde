@@ -66,6 +66,8 @@ class Particle {
     PVector v  = PVector.sub(pos, psCenter);
     
     float sn = -camPos.dot(v);
+    
+    println(sn);
  
     float sd = camPos.mag();
     

@@ -25,49 +25,71 @@ varying vec2 center;
 varying vec2 texCoord;
 varying vec2 pos;
 
-float getDistToPoint(){
+void main() {
 
-  vec3 camPos = cameraPosition;
+  vec4 col;
+  vec2 m0ffset = vec2(offset);
 
-  vec3 v = vertex.xyz - psCenter;
+  //---------- get distance to focalPlane ----------//
+
+  vec3 camPos = cameraPosition; //normal
+
+  //vec3 v = vertex.xyz - psCenter; //psCenter origin
+  vec3 v =  psCenter - vertex.xyz;
 
   //dot returns the dot product of two vectors
+
   float sn = dot(-camPos, v);
 
-  float sd = camPos.length;
-  //float sd = pow(camPos.length, 2);
-
-  sd *= sd;
+  float sd = length(camPos);
+  sd = pow(sd, 2);
 
   camPos *= (sn/sd);
 
   vec3 isec = vertex.xyz + camPos;
 
-  float dist = length(isec - vertex.xyz);
+  float dist = distance(isec, vertex.xyz);
 
-  return dist;
-/*
-  float sn = -normal.dot(p.sub(this));
-        float sd = normal.magSquared();
-        Vec3D isec = p.add(normal.scale(sn / sd));
-        return isec.distanceTo(p);*/
+  float distToFocalPlane = dist;
 
-}
-void main() {
 
-  vec2 m0ffset = vec2(offset);
+  //---------- end get distance to focalPlane ----------//
 
-  float distToFocalPlane = getDistToPoint();
+
+  //float distToFocalPlane = getDistToPoint();
+  //float distToFocalPlane = 1.;
   
   distToFocalPlane /= dofRatio;
 
-  distToFocalPlane += blurEffect;
+  //distToFocalPlane += blurEffect;
 
   distToFocalPlane = clamp(distToFocalPlane, 1., 15.);
 
-  float alpha = (255./(distToFocalPlane*distToFocalPlane))/255.;
-  alpha = clamp(alpha, .01, 1.);
+  if(distToFocalPlane>10.){
 
+    col = vec4(0.0, 1.0, .0, 1.0);
+
+  } else if(distToFocalPlane>1.){
+
+    col = vec4(1.0, .0, .0, 1.0);
+
+  } else if (distToFocalPlane==1.){
+
+    col = vec4(.0, 1.0, 1.0, 1.0);
+
+  } else {
+    //purple
+    col = vec4(1.0, .0, 1.0, 1.0); 
+
+  }
+
+  float alpha = (255./(distToFocalPlane*distToFocalPlane))/255.;
+
+  alpha = clamp(alpha, .1, 1.);
+
+  col.a = alpha;
+
+  //alpha = 1.;
 
   if(m0ffset[0] > 0)m0ffset[0]+=distToFocalPlane;
   if(m0ffset[0] < 0)m0ffset[0]+=-distToFocalPlane;
@@ -75,7 +97,8 @@ void main() {
   if(m0ffset[1] < 0)m0ffset[1]+=-distToFocalPlane;
 
 
-  vec4 col = vec4(1.0, 1.0, 1.0, alpha);
+  //vec4 col = vec4(1.0, 1.0, 1.0, alpha);
+  //vec4 col = vec4(alpha, alpha, alpha, 1.);
 
 
   //vec4 pos = modelview * vertex;
@@ -92,7 +115,6 @@ void main() {
     //vec2 tex2Pos = vec2(vertex.x/gWidth, vertex.y/gHeight);
     
     col.rgb = texture2D(tex1, tex2Pos).rgb;
-
 
   } 
 

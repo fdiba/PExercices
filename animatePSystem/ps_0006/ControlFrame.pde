@@ -27,8 +27,8 @@ public class ControlFrame extends PApplet {
     cp5.addSlider("turbulence", 0, 4, 1.3, x, y+=10, sw, sh).plugTo(parent, "turbulence");
     cp5.addToggle("paused", false, x, y+=11, 9, sh).plugTo(parent, "paused");
 
-    cp5.addToggle("useColors", true, x+40, y, 9, sh).plugTo(parent, "useColors");
-    cp5.addToggle("useShader", false, x+40*2+10, y, 9, sh).plugTo(parent, "useShader");
+    cp5.addToggle("useColors", false, x+40, y, 9, sh).plugTo(parent, "useColors");
+    cp5.addToggle("useShader", true, x+40*2+10, y, 9, sh).plugTo(parent, "useShader");
     cp5.addSlider("blurEffect", 0, 15, 0f, x, y+=30, sw, sh).plugTo(parent, "blurEffect");
   }
 
